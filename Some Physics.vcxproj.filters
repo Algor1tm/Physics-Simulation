@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{e0993def-28c5-4c9e-985b-3a5efe44f0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\lalala">
+      <UniqueIdentifier>{54965e1c-6eaa-4d9c-a944-f04ddc9e3dfc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\core\Engine.hpp" />
+    <ClInclude Include="include\core\MainApp.hpp" />
+    <ClInclude Include="include\core\Settings.hpp" />
+    <ClInclude Include="include\core\Vector2d.hpp" />
+    <ClInclude Include="include\objects\Ball.hpp" />
+    <ClInclude Include="include\objects\Line.hpp" />
+    <ClInclude Include="include\objects\PhysicalObjects.hpp" />
+    <ClInclude Include="include\objects\Polygon.hpp" />
+    <ClInclude Include="include\objects\SoftBall.hpp" />
+    <ClInclude Include="include\objects\SoftBody.hpp" />
+    <ClInclude Include="include\objects\SoftRectangle.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\core\Engine.cpp" />
+    <ClCompile Include="source\core\MainApp.cpp" />
+    <ClCompile Include="source\core\Vector2d.cpp" />
+    <ClCompile Include="source\objects\Ball.cpp" />
+    <ClCompile Include="source\objects\Line.cpp" />
+    <ClCompile Include="source\objects\Polygon.cpp" />
+    <ClCompile Include="source\objects\SoftBall.cpp" />
+    <ClCompile Include="source\objects\SoftBody.cpp" />
+    <ClCompile Include="source\objects\SoftRectangle.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+</Project>
