@@ -1,7 +1,7 @@
 #include "../../include/objects/SoftBall.hpp"
 
 
-SoftBall::SoftBall(Vector2d StartPos, Vector2d StartSpeed, float BodyRad,   \
+SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad,   \
                    int BallCount, int BallRad, float ballDensity,const sf::Color& clr){
     Rad = BodyRad;
 

@@ -9,10 +9,10 @@ Engine::Engine(const char* title, const sf::Color& clr){
     Window->setFramerateLimit(FPS);
     bgColor = clr;
 
-    Speedfactor = 30;
-    Accelfactor = 0.3;
+    Speedfactor = 30.f;
+    Accelfactor = 0.3f;
     g = {0, 7};
-    EnergyRemainAfterCollision = 0.95;
+    EnergyRemainAfterCollision = 0.95f;
 
     Pause = 1;
     SelectedBall = nullptr;
@@ -92,7 +92,6 @@ void Engine::ApplyCollisions(Ball* ball, bool softBody){
         if(CheckCollision(ball, line))
             Collide(ball, line, softBody);
         }
-
 }
 
 
@@ -119,7 +118,6 @@ Line* Engine::CheckCollision(Ball* ball, Polygon* pol){
     }
     return nullptr;
 }
-
 
 
 void Engine::Collide(Ball* ball1, Ball* ball2){
@@ -164,27 +162,28 @@ void Engine::Collide(Ball* ball, Line* line, bool softBody){
         Vector2d normal = 1 / m * (p1 - pos);
         ball->setPos(pos + dpos * normal);
 
-        ball->setSpeed( -EnergyRemainAfterCollision * ball->getSpeed() );
+	    ball->setSpeed(-EnergyRemainAfterCollision * ball->getSpeed());
     }
-    else if((p2 -  pos).getModule() <= r && !softBody){
-        float m = (p2 -  pos).getModule();
-        float dpos = m - r;
-        Vector2d normal = 1 / m * (p2 -  ball->getPos());
-        ball->setPos(pos + dpos * normal);
+	else if ((p2 - pos).getModule() <= r && !softBody) {
+		float m = (p2 - pos).getModule();
+		float dpos = m - r;
+		Vector2d normal = 1 / m * (p2 - pos);
+		ball->setPos(pos + dpos * normal);
 
         ball->setSpeed( -EnergyRemainAfterCollision * ball->getSpeed() );
     }
     else{
         float dpos = line->Distance(pos) - r;
-        Vector2d normal = 1 / line->NormalModule * line->Normal;
-        if(orientation(p1, p2, pos) != 1)
-            normal = -normal;
-        ball->setPos(pos + dpos * normal);
+        if (dpos <= 0) {
+			Vector2d normal = 1 / line->NormalModule * line->Normal;
+			if (orientation(p1, p2, pos) != 1)
+				normal = -normal;
+			ball->setPos(pos + dpos * normal);
 
-
-        Vector2d v = ball->getSpeed();
-        v = EnergyRemainAfterCollision * Vector2d::Reflect(v, line->Normal);
-        ball->setSpeed(v);
+			Vector2d v = ball->getSpeed();
+			v = EnergyRemainAfterCollision * Vector2d::Reflect(v, line->Normal);
+			ball->setSpeed(v);
+        }
     }
 }
 
@@ -219,12 +218,12 @@ void Engine::ForceObject(Ball* object){
 }
 
 
-int Engine::orientation(Vector2d p, Vector2d q, Vector2d r){
-    int val = (q.y - p.y) * (r.x - q.x) -
+int Engine::orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r){
+    float val = (q.y - p.y) * (r.x - q.x) -
             (q.x - p.x) * (r.y - q.y);
 
     if (val == 0) return 0; // collinear
-    return (val > 0)? 1: 2; // clock or counterclock wise
+    return (val > 0)? 1: 2; // clock or counter clock wise
 }
 
 
@@ -272,18 +271,21 @@ void Engine::OnMousePressed(const sf::Event& event){
         Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
         Vector2d selected = SelectObject(mpos);
 
-        if(selected.x == 0){
+        bool isSoftBody = selected.x;
+        unsigned index = (int)selected.y;
+
+        if(isSoftBody == 0){
             if(SelectedSoftBody != nullptr){
                 SelectedSoftBody->DisableSelectedEfect();
                 SelectedSoftBody = nullptr;
             }
             if(SelectedBall == nullptr){
-                SelectedBall = Balls[selected.y];
+                SelectedBall = Balls[index];
                 SelectedBall->EnableSelectedEfect(2);
             }
-            else if(SelectedBall != Balls[selected.y] && SelectedBall != nullptr){
+            else if(SelectedBall != Balls[index] && SelectedBall != nullptr){
                 SelectedBall->DisableSelectedEfect();
-                SelectedBall = Balls[selected.y];
+                SelectedBall = Balls[index];
                 SelectedBall->EnableSelectedEfect(2);
             }
             if(event.mouseButton.button == sf::Mouse::Left)
@@ -291,18 +293,18 @@ void Engine::OnMousePressed(const sf::Event& event){
             else
                 RightMouseButton = 1;
         }
-        else if(selected.x == 1){
+        else if(isSoftBody == 1){
             if(SelectedBall != nullptr){
                 SelectedBall->DisableSelectedEfect();
                 SelectedBall = nullptr;
             }
             if(SelectedSoftBody == nullptr){
-                SelectedSoftBody = SoftBodies[selected.y];
+                SelectedSoftBody = SoftBodies[index];
                 SelectedSoftBody->EnableSelectedEfect(1);
             }
-            else if(SelectedSoftBody != SoftBodies[selected.y] && SelectedSoftBody != nullptr){
+            else if(SelectedSoftBody != SoftBodies[index] && SelectedSoftBody != nullptr){
                 SelectedSoftBody->DisableSelectedEfect();
-                SelectedSoftBody = SoftBodies[selected.y];
+                SelectedSoftBody = SoftBodies[index];
                 SelectedSoftBody->EnableSelectedEfect(1);
             }
             if(event.mouseButton.button == sf::Mouse::Left)
@@ -327,7 +329,7 @@ void Engine::OnMouseMove(const sf::Event& event){
         }
         else if(RightMouseButton && SelectedBall != nullptr){
             Vector2d newSpeed = mpos - SelectedBall->getPos();
-            SelectedBall->setSpeed(0.2 * newSpeed);
+            SelectedBall->setSpeed(0.2f * newSpeed);
 
         }
     }

@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H_INCLUDED
-#define SETTINGS_H_INCLUDED
+#pragma once
 
 
 #ifndef WIDTH
@@ -21,4 +20,3 @@
 #define M_PI 3.14159265358979323846
 #endif // M_PI
 
-#endif // SETTINGS_H_INCLUDED

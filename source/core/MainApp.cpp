@@ -60,7 +60,7 @@ void MainApp::InitObjects(){
     SoftBall* sball = new SoftBall({50, 430}, {4, 0}, 30, 12, 5, 1, {250, 0, 0});
     PhysicEngine->AddObject(sball);
 
-    Ball* ball = new Ball({WIDTH  - 150, HEIGHT - 150}, {- 10, -10}, 30, 0.1, sf::Color(250, 200, 0));
+    Ball* ball = new Ball({WIDTH  - 150, HEIGHT - 150}, {- 10, -10}, 40, 0.1, sf::Color(250, 200, 0));
     PhysicEngine->AddObject(ball);
     ball = new Ball({WIDTH - 60, 50}, {-5, 0}, 30, 0.1, sf::Color(250, 120, 0));
     PhysicEngine->AddObject(ball);

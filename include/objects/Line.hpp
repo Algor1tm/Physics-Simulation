@@ -1,5 +1,4 @@
-#ifndef LINE_HPP_INCLUDED
-#define LINE_HPP_INCLUDED
+#pragma once
 
 #include "PhysicalObjects.hpp"
 #include "../core/Vector2d.hpp"
@@ -24,10 +23,9 @@ struct Line: public Static, public DrawAble{
 
 
     Line(const Vector2d& p1, const Vector2d& p2, int LineThickness, const sf::Color& color = sf::Color::White);
-    virtual ~Line() {;}
+    virtual ~Line() = default;
 
     float Distance(const Vector2d& point);
     void Draw(sf::RenderWindow* wnd)override;
 };
 
-#endif // LINE_HPP_INCLUDED

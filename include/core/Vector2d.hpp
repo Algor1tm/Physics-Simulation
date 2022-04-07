@@ -1,5 +1,4 @@
-#ifndef VECTOR2D_H_INCLUDED
-#define VECTOR2D_H_INCLUDED
+#pragma once
 
 #include <math.h>
 #include <ostream>
@@ -39,5 +38,3 @@ struct Vector2d{
     static Vector2d Reflect(const Vector2d& ToReflect, const Vector2d& v);
 };
 
-
-#endif // VECTOR2D_H_INCLUDED

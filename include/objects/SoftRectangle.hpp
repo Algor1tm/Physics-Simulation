@@ -10,7 +10,7 @@ private:
     int height;
 
 public:
-    SoftRectangle(Vector2d StartPos, Vector2d StartSpeed, int w, int h, int interval, int rad, float ballDensity,const sf::Color& clr);
+    SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed, int w, int h, int interval, int rad, float ballDensity,const sf::Color& clr);
     virtual ~SoftRectangle(){}
 
     void InnerForces() override;

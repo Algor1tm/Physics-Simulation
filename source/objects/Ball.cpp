@@ -22,12 +22,12 @@ Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, floa
 void Ball::DrawSpeed(sf::RenderWindow* wnd){
     Vector2d vec = 7 * Speed + Pos;
     Vector2d nvec = 1 / Speed.getModule() * Speed;
-    int width;
+    float width;
     if(Speed.getModule() < 5)
-        width = 3;
+        width = 3.f;
     else
-        width = 4;
-    Vector2d w = (2 * width / tan(M_PI / 6)) * nvec;
+        width = 4.f;
+    Vector2d w = (2.f * width / (float)tan(M_PI / 6)) * nvec;
     Vector2d normal = {Pos.y - vec.y, vec.x - Pos.x};
     normal.normalize();
 
@@ -71,11 +71,12 @@ void Ball::DisableSelectedEfect(){
 }
 
 void Ball::EnableSelectedEfect(int thickness){
-    DrawShape.setRadius(Radius - thickness);
-    DrawShape.setOutlineThickness(thickness);
+    float thickf = (float)thickness;
+    DrawShape.setRadius(Radius - thickf);
+    DrawShape.setOutlineThickness(thickf);
     DrawShape.setOutlineColor({0, 255, 0});
 
-    Pos += Vector2d(thickness, thickness);
+    Pos += Vector2d(thickf, thickf);
 
     selected = 1;
 }
