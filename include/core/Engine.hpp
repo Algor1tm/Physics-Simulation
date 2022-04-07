@@ -1,5 +1,4 @@
-#ifndef ENGINE_HPP_INCLUDED
-#define ENGINE_HPP_INCLUDED
+#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -39,7 +38,7 @@ private:
     // 0 --> p, q and r are collinear
     // 1 --> Clockwise
     // 2 --> Counterclockwise
-    int orientation(Vector2d p, Vector2d q, Vector2d r);
+    int orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r);
 
     void ForceObject(Ball* object);
     void MoveObject(Ball* object, double dt);
@@ -89,5 +88,3 @@ public:
     // return 1 if Window were closed, else 0
     int HandleEvents();
 };
-
-#endif // ENGINE_HPP_INCLUDED

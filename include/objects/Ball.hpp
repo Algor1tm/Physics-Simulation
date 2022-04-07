@@ -1,5 +1,4 @@
-#ifndef BALL_HPP_INCLUDED
-#define BALL_HPP_INCLUDED
+#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -22,7 +21,7 @@ private:
     void DrawSpeed(sf::RenderWindow* wnd);
 public:
     Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr);
-    ~Ball(){;}
+    ~Ball() = default;
 
     // 1 - if selected by user, else - 0(selected from start)
     bool selected;
@@ -33,9 +32,9 @@ public:
     Vector2d getForce() const {return Force;}
     float getMass() const {return Mass;}
 
-    void setSpeed(Vector2d newSpeed) {Speed = newSpeed;}
-    void setPos(Vector2d newPos) {Pos = newPos;}
-    void setForce(Vector2d newForce) {Force = newForce;}
+    void setSpeed(const Vector2d& newSpeed) {Speed = newSpeed;}
+    void setPos(const Vector2d& newPos) {Pos = newPos;}
+    void setForce(const Vector2d& newForce) {Force = newForce;}
 
     void Draw(sf::RenderWindow* wnd);
 
@@ -44,5 +43,3 @@ public:
 
 };
 
-
-#endif // BALL_HPP_INCLUDED

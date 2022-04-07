@@ -1,5 +1,4 @@
-#ifndef MAINAPP_HPP_INCLUDED
-#define MAINAPP_HPP_INCLUDED
+#pragma once
 
 #include "Engine.hpp"
 
@@ -20,6 +19,3 @@ public:
     void Start();
 };
 
-
-
-#endif // MAINAPP_HPP_INCLUDED

@@ -1,19 +1,21 @@
 #include "../../include/objects/SoftRectangle.hpp"
 
 
-SoftRectangle::SoftRectangle(Vector2d StartPos, Vector2d StartSpeed, int w, int h, int interval, \
-                             int Rad, float ballDensity, const sf::Color& clr){
+SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed, int w, int h, int interval, \
+                             int Rad, float ballDensity, const sf::Color& clr)
+{
     width = w;
     height = h;
+    Vector2d pos = StartPos;
 
     float startx = StartPos.x;
     for (int i = 0; i < h; i++){
         for(int j = 0; j < w; j++){
-            Balls.push_back(new Ball(StartPos, StartSpeed, Rad, ballDensity, clr));
-            StartPos.x += interval;
+            Balls.push_back(new Ball(pos, StartSpeed, Rad, ballDensity, clr));
+            pos.x += interval;
         }
-        StartPos.y += interval;
-        StartPos.x = startx;
+        pos.y += interval;
+        pos.x = startx;
     }
 
     for (int i = 0; i < h; i++){

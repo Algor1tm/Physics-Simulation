@@ -1,5 +1,4 @@
-#ifndef SOFTBODY_HPP_INCLUDED
-#define SOFTBODY_HPP_INCLUDED
+#pragma once
 
 #include "PhysicalObjects.hpp"
 #include "../core/Vector2d.hpp"
@@ -9,7 +8,7 @@
 class SoftBody: public MovAble, public DrawAble{
 protected:
     struct Spring: public DrawAble{
-        const int Ks = 25000;
+        const int Ks = 20000;
         const int Kd = 3000;
 
         Ball* ball1;
@@ -19,7 +18,8 @@ protected:
         float DefaultLength;
 
         Spring(Ball* p1, Ball* p2);
-        virtual ~Spring(){}
+        virtual ~Spring() = default;
+
         void ApplyHookesForce();
         void ApplyDampingFactor();
         void ApplySelfCollision();
@@ -39,10 +39,10 @@ public:
     virtual ~SoftBody();
 
     virtual void Draw(sf::RenderWindow* wnd) override;
-    virtual void EnableSelectedEfect(int thickness);
-    virtual void DisableSelectedEfect();
+	virtual void EnableSelectedEfect(int thickness);
+	virtual void DisableSelectedEfect();
 
-    virtual Ball* getBall(unsigned i) {return Balls[i];}
+    virtual Ball* getBall(int i) const {return Balls[i];}
     virtual unsigned getNumOfBalls() const {return NumOfBalls;}
 
     virtual Vector2d getCenter() const = 0;
@@ -52,5 +52,3 @@ public:
     virtual void InnerForces() = 0;
 };
 
-
-#endif // SOFTBODY_HPP_INCLUDED

@@ -9,7 +9,7 @@ int main()
     App->InitObjects();
     App->Start();
 
-   delete App;
+    delete App;
 
     return 0;
 }

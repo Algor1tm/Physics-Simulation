@@ -1,5 +1,4 @@
-#ifndef POLYGON_H_INCLUDED
-#define POLYGON_H_INCLUDED
+#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -27,8 +26,7 @@ public:
 
     bool isNear(Ball* ball);
 
-    Line* getLine(unsigned i){return lines[i];}
+    Line* getLine(int i){return lines[i];}
     unsigned getSizeofLines() {return lines.size();}
 };
 
-#endif // POLYGON_H_INCLUDED

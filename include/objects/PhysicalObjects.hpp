@@ -1,26 +1,21 @@
-#ifndef PHYSICALOBJECT_HPP_INCLUDED
-#define PHYSICALOBJECT_HPP_INCLUDED
+#pragma once
 
 #include <SFML/Graphics.hpp>
 
 
 class DrawAble{
 public:
-    virtual ~DrawAble() {}
-    virtual void Draw(sf::RenderWindow* wnd)= 0;
+    virtual ~DrawAble() = default;
 
+    virtual void Draw(sf::RenderWindow* wnd)= 0;
 };
 
 class MovAble{
 public:
-    virtual ~MovAble() {}
-
+    virtual ~MovAble() = default;
 };
 
 class Static{
 public:
-    virtual ~Static() {;}
-
+    virtual ~Static() = default;
 };
-
-#endif // PHYSICALOBJECT_HPP_INCLUDED
