@@ -1,13 +1,12 @@
 #pragma once
 
-#include "PhysicalObjects.hpp"
 #include "../core/Vector2d.hpp"
 #include "Ball.hpp"
 
 
-class SoftBody: public MovAble, public DrawAble{
+class SoftBody{
 protected:
-    struct Spring: public DrawAble{
+    struct Spring{
         const int Ks = 20000;
         const int Kd = 3000;
 
@@ -24,7 +23,7 @@ protected:
         void ApplyDampingFactor();
         void ApplySelfCollision();
 
-        void Draw(sf::RenderWindow* wnd) override;
+        void Draw(sf::RenderWindow* wnd);
     };
 
     std::vector<Spring*> Springs;
@@ -38,7 +37,7 @@ protected:
 public:
     virtual ~SoftBody();
 
-    virtual void Draw(sf::RenderWindow* wnd) override;
+    virtual void Draw(sf::RenderWindow* wnd);
 	virtual void EnableSelectedEfect(int thickness);
 	virtual void DisableSelectedEfect();
 

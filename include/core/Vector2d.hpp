@@ -15,6 +15,7 @@ struct Vector2d{
     Vector2d(const Vector2d& v) {x = v.x, y = v.y;}
 
     float getModule() const {return std::sqrt(x * x + y * y);}
+    Vector2d getNormalized() const;
     Vector2d& normalize();
 
     operator sf::Vector2f() const {return sf::Vector2f(x, y);}

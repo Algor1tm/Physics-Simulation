@@ -2,13 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "PhysicalObjects.hpp"
 #include "../core/Vector2d.hpp"
 #include "Line.hpp"
 #include "Ball.hpp"
 
 
-class Polygon: public Static, public DrawAble{
+class Polygon{
 private:
     std::vector<Line*> lines;
 
@@ -22,7 +21,7 @@ public:
     Polygon(std::vector<Vector2d> points, int Thickness);
     virtual ~Polygon();
 
-    void Draw(sf::RenderWindow* wnd) override;
+    void Draw(sf::RenderWindow* wnd);
 
     bool isNear(Ball* ball);
 

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "PhysicalObjects.hpp"
+#include "SFML/Graphics.hpp"
+
 #include "../core/Vector2d.hpp"
 
 
 // ax + by + c = 0;
-struct Line: public Static, public DrawAble{
+struct Line{
     float a;
     float b;
     float c;
@@ -26,6 +27,6 @@ struct Line: public Static, public DrawAble{
     virtual ~Line() = default;
 
     float Distance(const Vector2d& point);
-    void Draw(sf::RenderWindow* wnd)override;
+    void Draw(sf::RenderWindow* wnd);
 };
 

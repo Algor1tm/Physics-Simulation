@@ -25,8 +25,8 @@
     <ClInclude Include="include\core\Vector2d.hpp" />
     <ClInclude Include="include\objects\Ball.hpp" />
     <ClInclude Include="include\objects\Line.hpp" />
-    <ClInclude Include="include\objects\PhysicalObjects.hpp" />
     <ClInclude Include="include\objects\Polygon.hpp" />
+    <ClInclude Include="include\objects\RigidBody.hpp" />
     <ClInclude Include="include\objects\SoftBall.hpp" />
     <ClInclude Include="include\objects\SoftBody.hpp" />
     <ClInclude Include="include\objects\SoftRectangle.hpp" />
@@ -44,6 +44,7 @@
     <ClCompile Include="source\objects\Ball.cpp" />
     <ClCompile Include="source\objects\Line.cpp" />
     <ClCompile Include="source\objects\Polygon.cpp" />
+    <ClCompile Include="source\objects\RigidBody.cpp" />
     <ClCompile Include="source\objects\SoftBall.cpp" />
     <ClCompile Include="source\objects\SoftBody.cpp" />
     <ClCompile Include="source\objects\SoftRectangle.cpp" />
