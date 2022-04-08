@@ -43,7 +43,7 @@ private:
     void ForceObject(Ball* object);
     void MoveObject(Ball* object, double dt);
 
-    void MoveObject(Ball* ball, Vector2d dx);
+    void MoveObject(Ball* ball, const Vector2d& dx);
 
     void ApplyCollisions(Ball* ball, bool softBody);
 

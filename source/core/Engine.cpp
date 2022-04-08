@@ -1,7 +1,8 @@
 #include "../../include/core/Engine.hpp"
 
 
-Engine::Engine(const char* title, const sf::Color& clr){
+Engine::Engine(const char* title, const sf::Color& clr)
+{
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
@@ -22,10 +23,11 @@ Engine::Engine(const char* title, const sf::Color& clr){
 }
 
 
-void Engine::Update(double dt){
+void Engine::Update(double dt)
+{
     if(!Pause){
        for(auto& ball: Balls){
-        UpdateBall(ball, dt);
+            UpdateBall(ball, dt);
         }
 
         for(auto& sb: SoftBodies){
@@ -35,7 +37,8 @@ void Engine::Update(double dt){
 }
 
 
-void Engine::UpdateBall(Ball* ball, double dt){
+void Engine::UpdateBall(Ball* ball, double dt)
+{
     ApplyCollisions(ball, 0);
 
     ForceObject(ball);
@@ -43,7 +46,8 @@ void Engine::UpdateBall(Ball* ball, double dt){
 }
 
 
-void Engine::UpdateSoftBody(SoftBody* sb, double dt){
+void Engine::UpdateSoftBody(SoftBody* sb, double dt)
+{
     Ball* ball;
     Ball* otherball;
     unsigned num = sb->getNumOfBalls();
@@ -72,7 +76,8 @@ void Engine::UpdateSoftBody(SoftBody* sb, double dt){
 }
 
 
-void Engine::ApplyCollisions(Ball* ball, bool softBody){
+void Engine::ApplyCollisions(Ball* ball, bool softBody)
+{
     for(auto& target: Balls){
         if(ball != target){
             if(CheckCollision(ball, target))
@@ -95,7 +100,8 @@ void Engine::ApplyCollisions(Ball* ball, bool softBody){
 }
 
 
-Ball* Engine::CheckCollision(Ball* ball, SoftBody* body){
+Ball* Engine::CheckCollision(Ball* ball, SoftBody* body)
+{
     Vector2d pos = ball->getPos();
     float r = ball->getRadius();
     Vector2d maxp = body->getMaxPoint();
@@ -109,7 +115,9 @@ Ball* Engine::CheckCollision(Ball* ball, SoftBody* body){
     return nullptr;
 }
 
-Line* Engine::CheckCollision(Ball* ball, Polygon* pol){
+
+Line* Engine::CheckCollision(Ball* ball, Polygon* pol)
+{
     Line* line;
     for(unsigned i = 0; i < pol->getSizeofLines(); i++){
         line = pol->getLine(i);
@@ -120,28 +128,27 @@ Line* Engine::CheckCollision(Ball* ball, Polygon* pol){
 }
 
 
-void Engine::Collide(Ball* ball1, Ball* ball2){
+void Engine::Collide(Ball* ball1, Ball* ball2)
+{
     Vector2d dpos = ball1->getPos() - ball2->getPos();
     float m = dpos.getModule();
 
     float Overlap = ball1->getRadius() + ball2->getRadius() - m;
     Vector2d normal = 1 / m * dpos;
-    ball1->setPos(ball1->getPos() + Overlap / 2 * normal);
-    ball2->setPos(ball2->getPos() - Overlap / 2 * normal);
+    ball1->AddPos(Overlap / 2 * normal);
+    ball2->AddPos(-Overlap / 2 * normal);
 
     Vector2d v1 = ball1->getSpeed();
     Vector2d v2 = ball2->getSpeed();
 
     float temp = 2 /((ball1->getMass() + ball2->getMass()) * m * m);
 
-    Vector2d newSpeed = v1;
-    newSpeed -= temp * ball2->getMass() * Vector2d::DotProduct(v1 - v2, dpos) * dpos;
-    ball1->setSpeed(newSpeed);
+    Vector2d newSpeed;
+    newSpeed = -temp * ball2->getMass() * Vector2d::DotProduct(v1 - v2, dpos) * dpos;
+    ball1->AddSpeed(newSpeed);
 
-
-    newSpeed = v2;
-    newSpeed -= temp * ball1->getMass() * Vector2d::DotProduct(v2 - v1, -dpos) * (-dpos);
-    ball2->setSpeed(newSpeed);
+    newSpeed = -temp * ball1->getMass() * Vector2d::DotProduct(v2 - v1, -dpos) * (-dpos);
+    ball2->AddSpeed(newSpeed);
 }
 
 
@@ -160,29 +167,29 @@ void Engine::Collide(Ball* ball, Line* line, bool softBody){
         float m = (p1 -  pos).getModule();
         float dpos = m - r;
         Vector2d normal = 1 / m * (p1 - pos);
-        ball->setPos(pos + dpos * normal);
+        ball->AddPos(dpos * normal);
 
-	    ball->setSpeed(-EnergyRemainAfterCollision * ball->getSpeed());
+	    ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
     }
 	else if ((p2 - pos).getModule() <= r && !softBody) {
 		float m = (p2 - pos).getModule();
 		float dpos = m - r;
-		Vector2d normal = 1 / m * (p2 - pos);
-		ball->setPos(pos + dpos * normal);
+		Vector2d normal = (p2 - pos) / m;
+		ball->AddPos(dpos * normal);
 
-        ball->setSpeed( -EnergyRemainAfterCollision * ball->getSpeed() );
+        ball->AddSpeed( -EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
     }
     else{
         float dpos = line->Distance(pos) - r;
         if (dpos <= 0) {
-			Vector2d normal = 1 / line->NormalModule * line->Normal;
+			Vector2d normal = line->Normal.getNormalized();
 			if (orientation(p1, p2, pos) != 1)
 				normal = -normal;
-			ball->setPos(pos + dpos * normal);
+			ball->AddPos(dpos * normal);
 
 			Vector2d v = ball->getSpeed();
 			v = EnergyRemainAfterCollision * Vector2d::Reflect(v, line->Normal);
-			ball->setSpeed(v);
+			ball->AddSpeed(v - ball->getSpeed());
         }
     }
 }
@@ -203,22 +210,28 @@ bool Engine::CheckCollision(Ball* ball, Line* line){
     return Distance <=  ball->getRadius() + line->Thickness / 2;
 }
 
-void Engine::MoveObject(Ball* ball, Vector2d dx){
-    ball->setPos(ball->getPos() + dx);
-}
 
-void Engine::MoveObject(Ball* object, double dt){
-    object->setSpeed(object->getSpeed() + Accelfactor * dt / object->getMass() * object->getForce());
-    object->setPos(object->getPos() + Speedfactor * dt * object->getSpeed());
+void Engine::MoveObject(Ball* ball, const Vector2d& dx)
+{
+    ball->AddPos(dx);
 }
 
 
-void Engine::ForceObject(Ball* object){
-    object->setForce(object->getMass() * g);
+void Engine::MoveObject(Ball* object, double dt)
+{
+    object->AddSpeed(Accelfactor * dt / object->getMass() * object->getForce());
+    object->AddPos(Speedfactor * dt * object->getSpeed());
 }
 
 
-int Engine::orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r){
+void Engine::ForceObject(Ball* object)
+{
+    object->AddForce(object->getMass() * g - object->getForce());
+}
+
+
+int Engine::orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
+{
     float val = (q.y - p.y) * (r.x - q.x) -
             (q.x - p.x) * (r.y - q.y);
 
@@ -227,7 +240,8 @@ int Engine::orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
 }
 
 
-void Engine::Render(){
+void Engine::Render()
+{
     Window->clear(bgColor);
 
     for(auto& object: Lines){
@@ -249,7 +263,9 @@ void Engine::Render(){
     Window->display();
 }
 
-Vector2d Engine::SelectObject(const Vector2d& mpos){
+
+Vector2d Engine::SelectObject(const Vector2d& mpos)
+{
     for(unsigned i = 0; i < Balls.size(); i++){
         if((mpos - Balls[i]->getPos()).getModule() <= Balls[i]->getRadius()){
             return {0, (float)i};
@@ -266,8 +282,10 @@ Vector2d Engine::SelectObject(const Vector2d& mpos){
 }
 
 
-void Engine::OnMousePressed(const sf::Event& event){
-    if(Pause){
+void Engine::OnMousePressed(const sf::Event& event)
+{
+    if(Pause)
+    {
         Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
         Vector2d selected = SelectObject(mpos);
 
@@ -315,7 +333,9 @@ void Engine::OnMousePressed(const sf::Event& event){
     }
 }
 
-void Engine::OnMouseMove(const sf::Event& event){
+
+void Engine::OnMouseMove(const sf::Event& event)
+{
     if(Pause){
         Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
         if(LeftMouseButton){
@@ -329,13 +349,14 @@ void Engine::OnMouseMove(const sf::Event& event){
         }
         else if(RightMouseButton && SelectedBall != nullptr){
             Vector2d newSpeed = mpos - SelectedBall->getPos();
-            SelectedBall->setSpeed(0.2f * newSpeed);
-
+            SelectedBall->AddSpeed(0.2f * newSpeed - SelectedBall->getSpeed());
         }
     }
 }
 
-void Engine::OnKeyPressed(const sf::Event& event){
+
+void Engine::OnKeyPressed(const sf::Event& event)
+{
     if(event.key.code == sf::Keyboard::Space){
         if(Pause){
             if(SelectedBall != nullptr){
@@ -351,7 +372,9 @@ void Engine::OnKeyPressed(const sf::Event& event){
     }
 }
 
-int Engine::HandleEvents(){
+
+int Engine::HandleEvents()
+{
     sf::Event event;
 
     while (Window->pollEvent(event))
@@ -376,7 +399,9 @@ int Engine::HandleEvents(){
     return 0;
 }
 
-Engine::~Engine(){
+
+Engine::~Engine()
+{
     for(auto& object: Balls){
         delete object;
     }

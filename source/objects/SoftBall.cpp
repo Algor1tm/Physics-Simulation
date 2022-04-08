@@ -38,7 +38,7 @@ void SoftBall::ApplyEqautionOfIdealGas(){
         pos = Balls[i]->getPos();
         normal = (pos - center).normalize();
         F = nRT / Area * normal;
-        Balls[i]->setForce(Balls[i]->getForce() + F);
+        Balls[i]->AddForce(F);
     }
 }
 

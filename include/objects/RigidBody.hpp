@@ -19,9 +19,6 @@ public:
     void AddPos(const Vector2d& pos) { Pos += pos; }
     void AddForce(const Vector2d& force) { Force += force; }
 
-    void setSpeed(const Vector2d& newSpeed) { Speed = newSpeed; }
-    void setPos(const Vector2d& newPos) { Pos = newPos; }
-    void setForce(const Vector2d& newForce) { Force = newForce; }
 private:
     Vector2d Pos;
     Vector2d Speed;
