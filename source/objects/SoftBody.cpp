@@ -53,6 +53,20 @@ void SoftBody::Spring::ApplyHookesForce()
 }
 
 
+void SoftBody::Move(double time)
+{
+    for (auto& ball : Balls)
+        ball->Move(time);
+}
+
+
+void SoftBody::Move(const Vector2d& distance)
+{
+    for (auto& ball : Balls)
+        ball->Move(distance);
+}
+
+
 void SoftBody::Draw(sf::RenderWindow* wnd)
 {
     for(auto& spring: Springs)

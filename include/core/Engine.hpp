@@ -41,9 +41,6 @@ private:
     int orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r);
 
     void ForceObject(Ball* object);
-    void MoveObject(Ball* object, double dt);
-
-    void MoveObject(Ball* ball, const Vector2d& dx);
 
     void ApplyCollisions(Ball* ball, bool softBody);
 

@@ -14,7 +14,7 @@ private:
 
     sf::CircleShape DrawShape;
 
-    void DrawSpeed(sf::RenderWindow* wnd);
+    void DrawSpeed(sf::RenderWindow* window);
 public:
     Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr);
     ~Ball() = default;
@@ -24,7 +24,7 @@ public:
     bool selected;
 
     float getRadius() { return Radius; }
-    void Draw(sf::RenderWindow* wnd);
+    void Draw(sf::RenderWindow* window) override;
 
     void EnableSelectedEfect(int thickness);
     void DisableSelectedEfect();

@@ -42,7 +42,7 @@ void Engine::UpdateBall(Ball* ball, double dt)
     ApplyCollisions(ball, 0);
 
     ForceObject(ball);
-    MoveObject(ball, dt);
+    ball->Move(dt);
 }
 
 
@@ -68,11 +68,7 @@ void Engine::UpdateSoftBody(SoftBody* sb, double dt)
     }
 
     sb->InnerForces();
-
-    for(unsigned j = 0; j < num; j++){
-        ball = sb->getBall(j);
-        MoveObject(ball, dt);
-    }
+    sb->Move(dt);
 }
 
 
@@ -84,7 +80,6 @@ void Engine::ApplyCollisions(Ball* ball, bool softBody)
                 Collide(ball, target);
         }
     }
-
     Line* line;
     for(auto& pol: Polygons){
         if(pol->isNear(ball)){
@@ -96,7 +91,7 @@ void Engine::ApplyCollisions(Ball* ball, bool softBody)
     for(auto& line: Lines){
         if(CheckCollision(ball, line))
             Collide(ball, line, softBody);
-        }
+    }
 }
 
 
@@ -208,19 +203,6 @@ bool Engine::CheckCollision(Ball* ball, Line* line){
     float Distance = (ball->getPos() - ClosestPoint).getModule();
 
     return Distance <=  ball->getRadius() + line->Thickness / 2;
-}
-
-
-void Engine::MoveObject(Ball* ball, const Vector2d& dx)
-{
-    ball->AddPos(dx);
-}
-
-
-void Engine::MoveObject(Ball* object, double dt)
-{
-    object->AddSpeed(Accelfactor * dt / object->getMass() * object->getForce());
-    object->AddPos(Speedfactor * dt * object->getSpeed());
 }
 
 
@@ -340,11 +322,10 @@ void Engine::OnMouseMove(const sf::Event& event)
         Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
         if(LeftMouseButton){
             if(SelectedBall != nullptr)
-                MoveObject(SelectedBall, mpos - SelectedBall->getPos());
+                SelectedBall->Move(mpos - SelectedBall->getPos());
             else if(SelectedSoftBody != nullptr){
                 Vector2d center = SelectedSoftBody->getCenter();
-                for(unsigned i = 0; i < SelectedSoftBody->getNumOfBalls(); i++)
-                    MoveObject(SelectedSoftBody->getBall(i), mpos - center);
+                SelectedSoftBody->Move(mpos - center);
             }
         }
         else if(RightMouseButton && SelectedBall != nullptr){

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../core/Vector2d.hpp"
+#include "Objects.hpp"
 #include "Ball.hpp"
 
 
-class SoftBody{
+class SoftBody: public MovAble{
 protected:
     struct Spring{
         const int Ks = 20000;
@@ -35,14 +36,18 @@ protected:
     Vector2d MinPoint;
 
 public:
+    SoftBody() = default;
     virtual ~SoftBody();
+
+    virtual void Move(double time) override;
+    virtual void Move(const Vector2d& distance) override;
 
     virtual void Draw(sf::RenderWindow* wnd);
 	virtual void EnableSelectedEfect(int thickness);
 	virtual void DisableSelectedEfect();
 
-    virtual Ball* getBall(int i) const {return Balls[i];}
-    virtual unsigned getNumOfBalls() const {return NumOfBalls;}
+    Ball* getBall(int i) const {return Balls[i];}
+    unsigned getNumOfBalls() const {return NumOfBalls;}
 
     virtual Vector2d getCenter() const = 0;
     virtual Vector2d getMaxPoint() = 0;

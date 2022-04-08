@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\core\Collision.hpp" />
     <ClInclude Include="include\core\Engine.hpp" />
     <ClInclude Include="include\core\MainApp.hpp" />
     <ClInclude Include="include\core\Settings.hpp" />
     <ClInclude Include="include\core\Vector2d.hpp" />
     <ClInclude Include="include\objects\Ball.hpp" />
     <ClInclude Include="include\objects\Line.hpp" />
+    <ClInclude Include="include\objects\Objects.hpp" />
     <ClInclude Include="include\objects\Polygon.hpp" />
     <ClInclude Include="include\objects\RigidBody.hpp" />
     <ClInclude Include="include\objects\SoftBall.hpp" />
