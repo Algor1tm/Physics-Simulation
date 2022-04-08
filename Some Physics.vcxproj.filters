@@ -39,5 +39,6 @@
     <ClCompile Include="source\objects\SoftRectangle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\objects\RigidBody.cpp" />
+    <ClCompile Include="source\core\Collision.cpp" />
   </ItemGroup>
 </Project>

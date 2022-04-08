@@ -10,10 +10,7 @@ Engine::Engine(const char* title, const sf::Color& clr)
     Window->setFramerateLimit(FPS);
     bgColor = clr;
 
-    Speedfactor = 30.f;
-    Accelfactor = 0.3f;
     g = {0, 7};
-    EnergyRemainAfterCollision = 0.95f;
 
     Pause = 1;
     SelectedBall = nullptr;
@@ -39,186 +36,69 @@ void Engine::Update(double dt)
 
 void Engine::UpdateBall(Ball* ball, double dt)
 {
-    ApplyCollisions(ball, 0);
+    ApplyCollisions(ball);
 
-    ForceObject(ball);
+    ApplyGravity(ball);
     ball->Move(dt);
 }
 
 
-void Engine::UpdateSoftBody(SoftBody* sb, double dt)
+void Engine::UpdateSoftBody(SoftBody* soft, double dt)
 {
-    Ball* ball;
-    Ball* otherball;
-    unsigned num = sb->getNumOfBalls();
-
-    for(unsigned j = 0; j < num; j++){
-        ball = sb->getBall(j);
-
-        for(auto& target: SoftBodies){
-            if(target != sb){
-                otherball = CheckCollision(ball, target);
-                if(otherball != nullptr)
-                    Collide(ball, otherball);
-            }
-        }
-
-        ApplyCollisions(ball, 1);
-        ForceObject(ball);
-    }
-
-    sb->InnerForces();
-    sb->Move(dt);
+    ApplyCollisions(soft);
+    soft->InnerForces();
+    soft->Move(dt);
 }
 
 
-void Engine::ApplyCollisions(Ball* ball, bool softBody)
+void Engine::ApplyCollisions(SoftBody* soft)
+{
+    Ball* ball;
+    Ball* otherball;
+    unsigned num = soft->getNumOfBalls();
+
+    for (unsigned j = 0; j < num; j++) {
+        ball = soft->getBall(j);
+
+        for (auto& target : SoftBodies) {
+            if (target != soft) {
+                otherball = Collision::CheckCollision(ball, target);
+                if (otherball != nullptr)
+                    Collision::Collide(ball, otherball);
+            }
+        }
+        ApplyCollisions(ball);
+        ApplyGravity(ball);
+    }
+}
+
+
+void Engine::ApplyCollisions(Ball* ball)
 {
     for(auto& target: Balls){
         if(ball != target){
-            if(CheckCollision(ball, target))
-                Collide(ball, target);
+            if(Collision::CheckCollision(ball, target))
+                Collision::Collide(ball, target);
         }
     }
     Line* line;
     for(auto& pol: Polygons){
         if(pol->isNear(ball)){
-            line = CheckCollision(ball, pol);
+            line = Collision::CheckCollision(ball, pol);
             if(line != nullptr)
-                Collide(ball, line, softBody);
+                Collision::Collide(ball, line);
         }
     }
     for(auto& line: Lines){
-        if(CheckCollision(ball, line))
-            Collide(ball, line, softBody);
+        if(Collision::CheckCollision(ball, line))
+            Collision::Collide(ball, line);
     }
 }
 
 
-Ball* Engine::CheckCollision(Ball* ball, SoftBody* body)
-{
-    Vector2d pos = ball->getPos();
-    float r = ball->getRadius();
-    Vector2d maxp = body->getMaxPoint();
-    Vector2d minp = body->getMinPoint();
-    if(pos.x <= maxp.x + r && pos.y <= maxp.y + r && pos.x >= minp.x - r && pos.y >= minp.y - r){
-        for(unsigned i = 0; i < body->getNumOfBalls(); i++){
-            if(CheckCollision(ball, body->getBall(i)))
-                return body->getBall(i);
-        }
-    }
-    return nullptr;
-}
-
-
-Line* Engine::CheckCollision(Ball* ball, Polygon* pol)
-{
-    Line* line;
-    for(unsigned i = 0; i < pol->getSizeofLines(); i++){
-        line = pol->getLine(i);
-        if(CheckCollision(ball, line))
-            return line;
-    }
-    return nullptr;
-}
-
-
-void Engine::Collide(Ball* ball1, Ball* ball2)
-{
-    Vector2d dpos = ball1->getPos() - ball2->getPos();
-    float m = dpos.getModule();
-
-    float Overlap = ball1->getRadius() + ball2->getRadius() - m;
-    Vector2d normal = 1 / m * dpos;
-    ball1->AddPos(Overlap / 2 * normal);
-    ball2->AddPos(-Overlap / 2 * normal);
-
-    Vector2d v1 = ball1->getSpeed();
-    Vector2d v2 = ball2->getSpeed();
-
-    float temp = 2 /((ball1->getMass() + ball2->getMass()) * m * m);
-
-    Vector2d newSpeed;
-    newSpeed = -temp * ball2->getMass() * Vector2d::DotProduct(v1 - v2, dpos) * dpos;
-    ball1->AddSpeed(newSpeed);
-
-    newSpeed = -temp * ball1->getMass() * Vector2d::DotProduct(v2 - v1, -dpos) * (-dpos);
-    ball2->AddSpeed(newSpeed);
-}
-
-
-bool Engine::CheckCollision(Ball* ball1, Ball* ball2){
-    float Distance = (ball1->getPos() - ball2->getPos()).getModule();
-
-    return Distance <= ball1->getRadius() + ball2->getRadius();
-}
-
-
-void Engine::Collide(Ball* ball, Line* line, bool softBody){
-    float r = ball->getRadius() + line->Thickness / 2;
-    Vector2d p1 = line->Point1, p2 = line->Point2;
-    Vector2d pos = ball->getPos();
-    if((p1 -  pos).getModule() <= r && !softBody){
-        float m = (p1 -  pos).getModule();
-        float dpos = m - r;
-        Vector2d normal = 1 / m * (p1 - pos);
-        ball->AddPos(dpos * normal);
-
-	    ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
-    }
-	else if ((p2 - pos).getModule() <= r && !softBody) {
-		float m = (p2 - pos).getModule();
-		float dpos = m - r;
-		Vector2d normal = (p2 - pos) / m;
-		ball->AddPos(dpos * normal);
-
-        ball->AddSpeed( -EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
-    }
-    else{
-        float dpos = line->Distance(pos) - r;
-        if (dpos <= 0) {
-			Vector2d normal = line->Normal.getNormalized();
-			if (orientation(p1, p2, pos) != 1)
-				normal = -normal;
-			ball->AddPos(dpos * normal);
-
-			Vector2d v = ball->getSpeed();
-			v = EnergyRemainAfterCollision * Vector2d::Reflect(v, line->Normal);
-			ball->AddSpeed(v - ball->getSpeed());
-        }
-    }
-}
-
-
-bool Engine::CheckCollision(Ball* ball, Line* line){
-    Vector2d p1 = line->Point1;
-    Vector2d toProject = ball->getPos() - p1;
-    Vector2d onProject = line->Point2 - p1;
-
-    float SqauredLength = line->Length * line->Length;
-
-    float project = std::max(0.f, std::min(SqauredLength, Vector2d::DotProduct(toProject, onProject))) / SqauredLength;
-    Vector2d ClosestPoint = p1 + project * onProject;
-
-    float Distance = (ball->getPos() - ClosestPoint).getModule();
-
-    return Distance <=  ball->getRadius() + line->Thickness / 2;
-}
-
-
-void Engine::ForceObject(Ball* object)
+void Engine::ApplyGravity(RigidBody* object)
 {
     object->AddForce(object->getMass() * g - object->getForce());
-}
-
-
-int Engine::orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
-{
-    float val = (q.y - p.y) * (r.x - q.x) -
-            (q.x - p.x) * (r.y - q.y);
-
-    if (val == 0) return 0; // collinear
-    return (val > 0)? 1: 2; // clock or counter clock wise
 }
 
 

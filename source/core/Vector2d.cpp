@@ -10,12 +10,24 @@ Vector2d Vector2d::Reflect(const Vector2d& ToReflect, const Vector2d& v)
     return res;
 }
 
+
+int Vector2d::Orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
+{
+    float val = (q.y - p.y) * (r.x - q.x) -
+        (q.x - p.x) * (r.y - q.y);
+
+    if (val == 0) return 0; // collinear
+    return (val > 0) ? 1 : 2; // clock or counter clock wise
+}
+
+
 Vector2d Vector2d::getNormalized() const
 {
     Vector2d v{ x, y };
     v.normalize();
     return v;
 }
+
 
 Vector2d& Vector2d::operator+=(const Vector2d& v)
 {
@@ -24,6 +36,7 @@ Vector2d& Vector2d::operator+=(const Vector2d& v)
     return *this;
 }
 
+
 Vector2d& Vector2d::operator-=(const Vector2d& v)
 {
     x -= v.x;
@@ -31,12 +44,14 @@ Vector2d& Vector2d::operator-=(const Vector2d& v)
     return *this;
 }
 
+
 Vector2d& Vector2d::normalize()
 {
     float m = getModule();
     x /= m, y /= m;
     return *this;
 }
+
 
 std::ostream& operator<<(std::ostream& os, const Vector2d& v)
 {

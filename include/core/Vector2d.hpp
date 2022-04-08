@@ -37,5 +37,9 @@ struct Vector2d{
 
     static float DotProduct(const Vector2d& v1, const Vector2d& v2) {return v1.x * v2.x + v1.y * v2.y;}
     static Vector2d Reflect(const Vector2d& ToReflect, const Vector2d& v);
+    // 0 --> p, q and r are collinear
+    // 1 --> Clockwise
+    // 2 --> Counterclockwise
+    static int Orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r);
 };
 

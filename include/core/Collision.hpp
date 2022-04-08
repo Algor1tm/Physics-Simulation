@@ -10,13 +10,16 @@
 class Collision
 {
 public:
+	Collision() = delete;
+
 	static bool CheckCollision(Ball* ball1, Ball* ball2);
 	static bool CheckCollision(Ball* ball, Line* line);
-	static Line* CheckCollision(Ball* ball, Polygon* polygon);
+
 	static Ball* CheckCollision(Ball* ball, SoftBody* soft);
+	static Line* CheckCollision(Ball* ball, Polygon* polygon);
 
 	static void Collide(Ball* ball1, Ball* ball2);
 	static void Collide(Ball* ball, Line* line);
-	static void Collide(Ball* ball, Polygon* polygon);
-	static void Collide(Ball* ball, SoftBody* soft);
+	
+	static constexpr float EnergyRemainAfterCollision = 0.95f;
 };

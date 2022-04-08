@@ -6,6 +6,8 @@
 #include "../objects/Line.hpp"
 #include "../objects/Polygon.hpp"
 #include "../objects/SoftBody.hpp"
+#include "../objects/RigidBody.hpp"
+#include "Collision.hpp"
 #include "Settings.hpp"
 #include "Vector2d.hpp"
 
@@ -15,11 +17,21 @@ private:
     sf::RenderWindow* Window;
     sf::Color bgColor;
 
-    float Speedfactor;
-    float Accelfactor;
     // acceleration of gravity
     Vector2d g;
-    float EnergyRemainAfterCollision;
+
+    std::vector<Ball*> Balls;
+    std::vector<SoftBody*> SoftBodies;
+    std::vector<Line*> Lines;
+    std::vector<Polygon*> Polygons;
+
+    void ApplyGravity(RigidBody* object);
+
+    void ApplyCollisions(Ball* ball);
+    void ApplyCollisions(SoftBody* soft);
+
+    void UpdateSoftBody(SoftBody* sb, double dt);
+    void UpdateBall(Ball* sb, double dt);
 
 
     bool Pause;
@@ -28,40 +40,8 @@ private:
     // 1 - user pressing right mouse button and selecting object, else - 0
     bool RightMouseButton;
     // 1 - if user pressing left mouse button and selecting object, else - 0
+
     bool LeftMouseButton;
-
-
-    std::vector<Ball*> Balls;
-    std::vector<SoftBody*> SoftBodies;
-    std::vector<Line*> Lines;
-    std::vector<Polygon*> Polygons;
-    // 0 --> p, q and r are collinear
-    // 1 --> Clockwise
-    // 2 --> Counterclockwise
-    int orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r);
-
-    void ForceObject(Ball* object);
-
-    void ApplyCollisions(Ball* ball, bool softBody);
-
-    // 1 - if collides, 0 - else
-    bool CheckCollision(Ball* ball, Line* line);
-    // softBody = 1 if ball belongs to softBody, else - 0
-    void Collide(Ball* ball, Line* line, bool softBody);
-
-    // return: -1 if not collides or
-    //         Line* with which collides
-    Line* CheckCollision(Ball* ball, Polygon* pol);
-
-    bool CheckCollision(Ball* ball1, Ball* ball2);
-    void Collide(Ball* ball1, Ball* ball2);
-
-    Ball* CheckCollision(Ball* ball, SoftBody* body);
-
-    void UpdateSoftBody(SoftBody* sb, double dt);
-    void UpdateBall(Ball* sb, double dt);
-
-
     //return: first value - if 0 - ball selected, if 1 - softbody selected
     //        second value - index of object
     //        returns {-1, -1} if no object were selected

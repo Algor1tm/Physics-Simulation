@@ -40,6 +40,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="source\core\Collision.cpp" />
     <ClCompile Include="source\core\Engine.cpp" />
     <ClCompile Include="source\core\MainApp.cpp" />
     <ClCompile Include="source\core\Vector2d.cpp" />
