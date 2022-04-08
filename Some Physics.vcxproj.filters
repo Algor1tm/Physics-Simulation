@@ -26,6 +26,7 @@
     <ClInclude Include="include\objects\RigidBody.hpp" />
     <ClInclude Include="include\core\Collision.hpp" />
     <ClInclude Include="include\objects\Objects.hpp" />
+    <ClInclude Include="include\core\SelectManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\core\Engine.cpp" />
@@ -40,5 +41,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\objects\RigidBody.cpp" />
     <ClCompile Include="source\core\Collision.cpp" />
+    <ClCompile Include="source\core\SelectManager.cpp" />
   </ItemGroup>
 </Project>

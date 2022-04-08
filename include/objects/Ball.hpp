@@ -14,20 +14,23 @@ private:
 
     sf::CircleShape DrawShape;
 
-    void DrawSpeed(sf::RenderWindow* window);
+    void drawSpeed(sf::RenderWindow* window);
 public:
     Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr);
     ~Ball() = default;
 
-    // 1 - if selected by user, else - 0
-    // (selected from start)
-    bool selected;
+    bool DrawSpeed;
 
-    float getRadius() { return Radius; }
+    bool isInside(const Vector2d& mousePos) override;
+
+    void OnLeftMouseMove(const Vector2d& mousePos) override;
+    void OnRightMouseMove(const Vector2d& mousePos) override;
+
+    void OnSelect(int thickness) override;
+    void OnDeselect(int thickness) override;
+
     void Draw(sf::RenderWindow* window) override;
 
-    void EnableSelectedEfect(int thickness);
-    void DisableSelectedEfect();
-
+    float getRadius() { return Radius; }
 };
 

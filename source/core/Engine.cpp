@@ -1,22 +1,16 @@
+#pragma warning(disable : 26812)
+
 #include "../../include/core/Engine.hpp"
 
 
-Engine::Engine(const char* title, const sf::Color& clr)
+Engine::Engine(const char* title, const sf::Color& clr):
+    selector_(Window), backgroundColor(clr), g(0, 7), Pause(1)
 {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
     Window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), "AHAHHA", sf::Style::Close, settings);
     Window->setFramerateLimit(FPS);
-    bgColor = clr;
-
-    g = {0, 7};
-
-    Pause = 1;
-    SelectedBall = nullptr;
-    SelectedSoftBody = nullptr;
-    RightMouseButton = 0;
-    LeftMouseButton = 0;
 }
 
 
@@ -37,8 +31,6 @@ void Engine::Update(double dt)
 void Engine::UpdateBall(Ball* ball, double dt)
 {
     ApplyCollisions(ball);
-
-    ApplyGravity(ball);
     ball->Move(dt);
 }
 
@@ -68,6 +60,7 @@ void Engine::ApplyCollisions(SoftBody* soft)
             }
         }
         ApplyCollisions(ball);
+
         ApplyGravity(ball);
     }
 }
@@ -93,6 +86,8 @@ void Engine::ApplyCollisions(Ball* ball)
         if(Collision::CheckCollision(ball, line))
             Collision::Collide(ball, line);
     }
+
+    ApplyGravity(ball);
 }
 
 
@@ -104,7 +99,7 @@ void Engine::ApplyGravity(RigidBody* object)
 
 void Engine::Render()
 {
-    Window->clear(bgColor);
+    Window->clear(backgroundColor);
 
     for(auto& object: Lines){
         object->Draw(Window);
@@ -126,109 +121,12 @@ void Engine::Render()
 }
 
 
-Vector2d Engine::SelectObject(const Vector2d& mpos)
+void Engine::OnKeyPressed(const sf::Keyboard::Key& keycode)
 {
-    for(unsigned i = 0; i < Balls.size(); i++){
-        if((mpos - Balls[i]->getPos()).getModule() <= Balls[i]->getRadius()){
-            return {0, (float)i};
-        }
+    if(keycode == sf::Keyboard::Space){
+        if(Pause)
+            selector_.Deselect();
 
-    }
-    for(unsigned i = 0; i < SoftBodies.size(); i++){
-        Vector2d minp = SoftBodies[i]->getMinPoint();
-        Vector2d maxp = SoftBodies[i]->getMaxPoint();
-        if(mpos.x <= maxp.x && mpos.y <= maxp.y && mpos.x >= minp.x && mpos.y >= minp.y)
-            return {1, (float)i};
-    }
-    return {-1, -1};
-}
-
-
-void Engine::OnMousePressed(const sf::Event& event)
-{
-    if(Pause)
-    {
-        Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
-        Vector2d selected = SelectObject(mpos);
-
-        bool isSoftBody = selected.x;
-        unsigned index = (int)selected.y;
-
-        if(isSoftBody == 0){
-            if(SelectedSoftBody != nullptr){
-                SelectedSoftBody->DisableSelectedEfect();
-                SelectedSoftBody = nullptr;
-            }
-            if(SelectedBall == nullptr){
-                SelectedBall = Balls[index];
-                SelectedBall->EnableSelectedEfect(2);
-            }
-            else if(SelectedBall != Balls[index] && SelectedBall != nullptr){
-                SelectedBall->DisableSelectedEfect();
-                SelectedBall = Balls[index];
-                SelectedBall->EnableSelectedEfect(2);
-            }
-            if(event.mouseButton.button == sf::Mouse::Left)
-                LeftMouseButton = 1;
-            else
-                RightMouseButton = 1;
-        }
-        else if(isSoftBody == 1){
-            if(SelectedBall != nullptr){
-                SelectedBall->DisableSelectedEfect();
-                SelectedBall = nullptr;
-            }
-            if(SelectedSoftBody == nullptr){
-                SelectedSoftBody = SoftBodies[index];
-                SelectedSoftBody->EnableSelectedEfect(1);
-            }
-            else if(SelectedSoftBody != SoftBodies[index] && SelectedSoftBody != nullptr){
-                SelectedSoftBody->DisableSelectedEfect();
-                SelectedSoftBody = SoftBodies[index];
-                SelectedSoftBody->EnableSelectedEfect(1);
-            }
-            if(event.mouseButton.button == sf::Mouse::Left)
-                LeftMouseButton = 1;
-            else
-                RightMouseButton = 1;
-        }
-    }
-}
-
-
-void Engine::OnMouseMove(const sf::Event& event)
-{
-    if(Pause){
-        Vector2d mpos = {(float)sf::Mouse::getPosition(*Window).x, (float)sf::Mouse::getPosition(*Window).y};
-        if(LeftMouseButton){
-            if(SelectedBall != nullptr)
-                SelectedBall->Move(mpos - SelectedBall->getPos());
-            else if(SelectedSoftBody != nullptr){
-                Vector2d center = SelectedSoftBody->getCenter();
-                SelectedSoftBody->Move(mpos - center);
-            }
-        }
-        else if(RightMouseButton && SelectedBall != nullptr){
-            Vector2d newSpeed = mpos - SelectedBall->getPos();
-            SelectedBall->AddSpeed(0.2f * newSpeed - SelectedBall->getSpeed());
-        }
-    }
-}
-
-
-void Engine::OnKeyPressed(const sf::Event& event)
-{
-    if(event.key.code == sf::Keyboard::Space){
-        if(Pause){
-            if(SelectedBall != nullptr){
-                SelectedBall->DisableSelectedEfect();
-                SelectedBall = nullptr;
-            }
-            if(SelectedSoftBody != nullptr){
-                SelectedSoftBody->DisableSelectedEfect();
-                SelectedSoftBody = nullptr;
-            }
-        }
         Pause = !Pause;
     }
 }
@@ -243,18 +141,13 @@ int Engine::HandleEvents()
         if (event.type == sf::Event::Closed){
             return 1;
         }
-        else if(event.type == sf::Event::MouseMoved){
-            OnMouseMove(event);
+        else if (event.type == sf::Event::KeyPressed) {
+            OnKeyPressed(event.key.code);
         }
-        else if(event.type == sf::Event::MouseButtonPressed){
-            OnMousePressed(event);
-        }
-        else if(event.type == sf::Event::MouseButtonReleased){
-            LeftMouseButton = 0;
-            RightMouseButton = 0;
-        }
-        else if(event.type == sf::Event::KeyPressed){
-            OnKeyPressed(event);
+
+        else if (Pause)
+        {
+            selector_.HandleMousePos(Window, event);
         }
     }
     return 0;
@@ -266,16 +159,12 @@ Engine::~Engine()
     for(auto& object: Balls){
         delete object;
     }
-
     for(auto& object: Lines){
         delete object;
     }
-
     for(auto& object: Polygons){
         delete object;
     }
-
-
     for(auto& object: SoftBodies){
         delete object;
     }

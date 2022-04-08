@@ -57,7 +57,7 @@ void MainApp::InitObjects(){
     SoftRectangle* srect = new SoftRectangle({200, 100}, {0, 0}, 8, 5, 17, 6, 1, {250, 0, 0});
     PhysicEngine->AddObject(srect);
 
-    SoftBall* sball = new SoftBall({50, 430}, {4, 0}, 30, 12, 5, 1, {250, 0, 0});
+    SoftBall* sball = new SoftBall({ 50, 430 }, { 4, 0 }, 30, 12, 5, 1, { 250, 0, 0 });
     PhysicEngine->AddObject(sball);
 
     Ball* ball = new Ball({WIDTH  - 150, HEIGHT - 150}, {- 10, -10}, 40, 0.1, sf::Color(250, 200, 0));

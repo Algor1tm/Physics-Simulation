@@ -33,34 +33,42 @@ SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpee
     }
 
     NumOfBalls = Balls.size();
-
 }
 
-Vector2d SoftRectangle::getMaxPoint(){
+
+Vector2d SoftRectangle::getMaxPoint()
+{
+    Vector2d maxPoint;
     //candidates:
     Vector2d c1 = Balls[0]->getPos();
     Vector2d c2 = Balls[width - 1]->getPos();
     Vector2d c3 = Balls[width * (height - 1)]->getPos();
     Vector2d c4 = Balls[Balls.size() - 1]->getPos();
 
-    MaxPoint.x = std::max(std::max(std::max(c1.x, c2.x), c3.x), c4.x);
-    MaxPoint.y = std::max(std::max(std::max(c1.y, c2.y), c3.y), c4.y);
+    maxPoint.x = std::max(std::max(std::max(c1.x, c2.x), c3.x), c4.x);
+    maxPoint.y = std::max(std::max(std::max(c1.y, c2.y), c3.y), c4.y);
 
-    return MaxPoint;
+    return maxPoint;
 }
 
-Vector2d SoftRectangle::getMinPoint(){
+
+Vector2d SoftRectangle::getMinPoint()
+{
+    Vector2d minPoint;
+    //candidates:
     Vector2d c1 = Balls[0]->getPos();
     Vector2d c2 = Balls[width - 1]->getPos();
     Vector2d c3 = Balls[width * (height - 1)]->getPos();
     Vector2d c4 = Balls[Balls.size() - 1]->getPos();
 
-    MinPoint.x = std::min(std::min(std::min(c1.x, c2.x), c3.x), c4.x);
-    MinPoint.y = std::min(std::min(std::min(c1.y, c2.y), c3.y), c4.y);
-    return MinPoint;
+    minPoint.x = std::min(std::min(std::min(c1.x, c2.x), c3.x), c4.x);
+    minPoint.y = std::min(std::min(std::min(c1.y, c2.y), c3.y), c4.y);
+    return minPoint;
 }
 
-void SoftRectangle::InnerForces(){
+
+void SoftRectangle::InnerForces()
+{
     for(auto& spring: Springs){
         spring->ApplyHookesForce();
         spring->ApplyDampingFactor();

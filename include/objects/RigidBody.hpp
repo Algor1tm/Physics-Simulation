@@ -6,7 +6,7 @@
 #include "Objects.hpp"
 
 
-class RigidBody: public MovAble
+class RigidBody: public MovAble, public Selectable
 {
 public:
     RigidBody(const Vector2d& startPos, const Vector2d& startSpeed, float mass);

@@ -1,8 +1,11 @@
 #include "../../include/objects/SoftBall.hpp"
 
+#include <iostream>
+
 
 SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad,   \
-                   int BallCount, int BallRad, float ballDensity,const sf::Color& clr){
+                   int BallCount, int BallRad, float ballDensity,const sf::Color& clr)
+{
     Rad = BodyRad;
 
     float tempx, tempy;
@@ -24,7 +27,9 @@ SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float B
     NumOfBalls = Balls.size();
 }
 
-void SoftBall::ApplyEqautionOfIdealGas(){
+
+void SoftBall::ApplyEqautionOfIdealGas()
+{
     unsigned s = Balls.size() / 2;
     Vector2d center;
     for(unsigned i = 0; i < s; i++)
@@ -42,7 +47,9 @@ void SoftBall::ApplyEqautionOfIdealGas(){
     }
 }
 
-void SoftBall::InnerForces(){
+
+void SoftBall::InnerForces()
+{
     ApplyEqautionOfIdealGas();
 
     for(auto& spring: Springs){
@@ -53,7 +60,8 @@ void SoftBall::InnerForces(){
 }
 
 
-float SoftBall::CalculateArea() const{
+float SoftBall::CalculateArea() const
+{
     float sum = 0;
     Vector2d pos1;
     Vector2d pos2;
@@ -64,30 +72,35 @@ float SoftBall::CalculateArea() const{
         pos2 = Balls[i]->getPos();
 
         sum += (pos1.x + pos2.x) * (pos1.y - pos2.y);
-
         j = i;
     }
     return 0.5 * fabs(sum);
 }
 
-Vector2d SoftBall::getMaxPoint(){
-    MaxPoint = Balls[0]->getPos();
+
+Vector2d SoftBall::getMaxPoint()
+{
+    Vector2d maxPoint;
+    maxPoint = Balls[0]->getPos();
     for(unsigned i = 1; i < Balls.size(); i++){
-        if(MaxPoint.x < Balls[i]->getPos().x)
-            MaxPoint.x = Balls[i]->getPos().x;
-        if(MaxPoint.y < Balls[i]->getPos().y)
-            MaxPoint.y = Balls[i]->getPos().y;
+        if(maxPoint.x < Balls[i]->getPos().x)
+            maxPoint.x = Balls[i]->getPos().x;
+        if(maxPoint.y < Balls[i]->getPos().y)
+            maxPoint.y = Balls[i]->getPos().y;
     }
-    return MaxPoint;
+    return maxPoint;
 }
 
-Vector2d SoftBall::getMinPoint(){
-    MinPoint = Balls[0]->getPos();
+
+Vector2d SoftBall::getMinPoint()
+{
+    Vector2d minPoint;
+    minPoint = Balls[0]->getPos();
     for(unsigned i = 1; i < Balls.size(); i++){
-        if(MinPoint.x > Balls[i]->getPos().x)
-            MinPoint.x = Balls[i]->getPos().x;
-        if(MinPoint.y > Balls[i]->getPos().y)
-            MinPoint.y = Balls[i]->getPos().y;
+        if(minPoint.x > Balls[i]->getPos().x)
+            minPoint.x = Balls[i]->getPos().x;
+        if(minPoint.y > Balls[i]->getPos().y)
+            minPoint.y = Balls[i]->getPos().y;
     }
-    return MinPoint;
+    return minPoint;
 }

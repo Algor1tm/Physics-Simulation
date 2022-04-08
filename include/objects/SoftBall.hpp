@@ -22,7 +22,5 @@ public:
     Vector2d getCenter() const override {return 0.5 * (Balls[0]->getPos() + Balls[Balls.size()/ 2]->getPos());}
     Vector2d getMaxPoint() override;
     Vector2d getMinPoint() override;
-
 };
-
 

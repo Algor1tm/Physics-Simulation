@@ -2,7 +2,7 @@
 
 
 Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr):
-    RigidBody{StartPos, StartSpeed, Rad * Rad * Rad * density }, Density{density}, Radius{Rad}, selected{false}
+    RigidBody{StartPos, StartSpeed, Rad * Rad * Rad * density }, Density{density}, Radius{Rad}, DrawSpeed(false)
 {
     DrawShape.setRadius(Rad);
     DrawShape.setPointCount(100);
@@ -11,7 +11,50 @@ Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, floa
 }
 
 
-void Ball::DrawSpeed(sf::RenderWindow* wnd)
+void Ball::OnLeftMouseMove(const Vector2d& mousePos)
+{ 
+    Move(mousePos - getPos()); 
+}
+
+
+void Ball::OnRightMouseMove(const Vector2d& mousePos)
+{ 
+    AddSpeed(0.2f * (mousePos - getPos()) - getSpeed()); 
+}
+
+
+bool Ball::isInside(const Vector2d& mousePos)
+{
+    return Vector2d::Distance(getPos(), mousePos) < Radius;
+}
+
+
+void Ball::OnSelect(int thickness)
+{
+    float thickf = (float)thickness;
+    DrawShape.setRadius(Radius - thickf);
+    DrawShape.setOutlineThickness(thickf);
+    DrawShape.setOutlineColor({ 0, 255, 0 });
+
+    AddPos(Vector2d(thickf, thickf));
+
+    DrawSpeed = selected_ = true;
+}
+
+
+void Ball::OnDeselect(int thickness)
+{
+    AddPos(-Vector2d(DrawShape.getOutlineThickness(), DrawShape.getOutlineThickness()));
+
+    DrawShape.setRadius(Radius);
+    DrawShape.setOutlineThickness(0);
+    DrawShape.setOutlineColor(DrawShape.getFillColor());
+
+    DrawSpeed = selected_ = false;
+}
+
+
+void Ball::drawSpeed(sf::RenderWindow* wnd)
 {
     Vector2d speed = getSpeed();
     Vector2d pos = getPos();
@@ -50,33 +93,7 @@ void Ball::Draw(sf::RenderWindow* wnd)
     DrawShape.setPosition(pos.x - Radius, pos.y - Radius);
 
     wnd->draw(DrawShape);
-
-    if(selected)
-        DrawSpeed(wnd);
+     
+    if(DrawSpeed)
+        drawSpeed(wnd);
 }
-
-
-void Ball::DisableSelectedEfect()
-{
-    AddPos(-Vector2d(DrawShape.getOutlineThickness(), DrawShape.getOutlineThickness()));
-
-    DrawShape.setRadius(Radius);
-    DrawShape.setOutlineThickness(0);
-    DrawShape.setOutlineColor(DrawShape.getFillColor());
-
-    selected = 0;
-}
-
-
-void Ball::EnableSelectedEfect(int thickness)
-{
-    float thickf = (float)thickness;
-    DrawShape.setRadius(Radius - thickf);
-    DrawShape.setOutlineThickness(thickf);
-    DrawShape.setOutlineColor({0, 255, 0});
-
-    AddPos(Vector2d(thickf, thickf));
-
-    selected = 1;
-}
-

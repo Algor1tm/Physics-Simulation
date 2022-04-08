@@ -1,6 +1,73 @@
 #include "../../include/objects/SoftBody.hpp"
 
 
+void SoftBody::Move(double time)
+{
+    for (auto& ball : Balls)
+        ball->Move(time);
+}
+
+
+void SoftBody::Move(const Vector2d& distance)
+{
+    for (auto& ball : Balls)
+        ball->Move(distance);
+}
+
+
+void SoftBody::Draw(sf::RenderWindow* wnd)
+{
+    for (auto& spring : Springs)
+        spring->Draw(wnd);
+
+    for (auto& ball : Balls)
+        ball->Draw(wnd);
+}
+
+
+bool SoftBody::isInside(const Vector2d& mousePos)
+{
+    Vector2d maxp = getMaxPoint();
+    Vector2d minp = getMinPoint();
+
+    return mousePos.x >= minp.x && mousePos.y >= minp.y && \
+        mousePos.x <= maxp.x && mousePos.y <= maxp.y;
+}
+
+
+void SoftBody::OnLeftMouseMove(const Vector2d& mousePos)
+{
+    Move(mousePos - getCenter());
+}
+
+
+void SoftBody::OnSelect(int thickness)
+{
+    for (auto& ball : Balls) {
+        ball->OnSelect(selectThickness_);
+        ball->DrawSpeed = false;
+    }
+}
+
+
+void SoftBody::OnDeselect(int thickness)
+{
+    for (auto& ball : Balls)
+        ball->OnDeselect(selectThickness_);
+}
+
+
+SoftBody::~SoftBody()
+{
+    for (auto& ball : Balls)
+        delete ball;
+    for (auto& spring : Springs)
+        delete spring;
+}
+
+
+
+
 SoftBody::Spring::Spring(Ball* b1, Ball* b2)
 {
     ball1 = b1;
@@ -53,59 +120,14 @@ void SoftBody::Spring::ApplyHookesForce()
 }
 
 
-void SoftBody::Move(double time)
+void SoftBody::Spring::Draw(sf::RenderWindow* wnd)
 {
-    for (auto& ball : Balls)
-        ball->Move(time);
-}
-
-
-void SoftBody::Move(const Vector2d& distance)
-{
-    for (auto& ball : Balls)
-        ball->Move(distance);
-}
-
-
-void SoftBody::Draw(sf::RenderWindow* wnd)
-{
-    for(auto& spring: Springs)
-        spring->Draw(wnd);
-
-    for(auto& ball: Balls)
-        ball->Draw(wnd);
-}
-
-
-void SoftBody::EnableSelectedEfect(int thickness)
-{
-    for(auto& ball:Balls){
-        ball->EnableSelectedEfect(thickness);
-        ball->selected = 0;
-    }
-}
-
-void SoftBody::DisableSelectedEfect()
-{
-    for(auto& ball:Balls)
-        ball->DisableSelectedEfect();
-}
-
-
-void SoftBody::Spring::Draw(sf::RenderWindow* wnd){
     sf::Vertex line[] = {
         sf::Vertex({ball1->getPos().x, ball1->getPos().y}),
         sf::Vertex({ball2->getPos().x, ball2->getPos().y})
     };
 
     wnd->draw(line, 2, sf::Lines);
-
 }
 
-SoftBody::~SoftBody(){
-    for(auto& ball: Balls)
-        delete ball;
-    for(auto& spring: Springs)
-        delete spring;
-}
 
