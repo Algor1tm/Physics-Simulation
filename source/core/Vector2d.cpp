@@ -4,7 +4,7 @@
 Vector2d Vector2d::Reflect(const Vector2d& ToReflect, const Vector2d& v)
 {
     Vector2d res = ToReflect;
-    float m = v.getModule();
+    float m = v.getLength();
     float temp = Vector2d::DotProduct(res, v) / (m * m);
     res -= 2 * temp * v;
     return res;
@@ -47,7 +47,7 @@ Vector2d& Vector2d::operator-=(const Vector2d& v)
 
 Vector2d& Vector2d::normalize()
 {
-    float m = getModule();
+    float m = getLength();
     x /= m, y /= m;
     return *this;
 }

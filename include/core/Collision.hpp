@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector2d.hpp"
+
 #include "../objects/Ball.hpp"
 #include "../objects/SoftBody.hpp"
 #include "../objects/Line.hpp"

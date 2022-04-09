@@ -7,23 +7,16 @@
 #include "../core/Settings.hpp"
 
 
-class Ball: public RigidBody{
-private:
-    float Density;
-    float Radius;
-
-    sf::CircleShape DrawShape;
-
-    void drawSpeed(sf::RenderWindow* window);
+class Ball: public RigidBody
+{
 public:
-    Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr);
+    Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& color);
     ~Ball() = default;
 
-    bool DrawSpeed;
-
     bool isInside(const Vector2d& mousePos) override;
-
+    // user moving object
     void OnLeftMouseMove(const Vector2d& mousePos) override;
+    // user change speed
     void OnRightMouseMove(const Vector2d& mousePos) override;
 
     void OnSelect(int thickness) override;
@@ -31,6 +24,15 @@ public:
 
     void Draw(sf::RenderWindow* window) override;
 
-    float getRadius() { return Radius; }
+    float getRadius() const { return radius_; }
+    // if true - drawing speed(arrow)
+    bool DrawSpeed;
+private:
+    float density_;
+    float radius_;
+
+    sf::CircleShape toDraw_;
+
+    void drawSpeed(sf::RenderWindow* window);
 };
 

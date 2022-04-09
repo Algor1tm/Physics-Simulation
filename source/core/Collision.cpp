@@ -3,38 +3,35 @@
 
 bool Collision::CheckCollision(Ball* ball1, Ball* ball2)
 {
-    float Distance = (ball1->getPos() - ball2->getPos()).getModule();
-    return Distance <= ball1->getRadius() + ball2->getRadius();
+    return Vector2d::Distance(ball1->getPos(), ball2->getPos()) <= ball1->getRadius() + ball2->getRadius();
 }
 
 
 bool Collision::CheckCollision(Ball* ball, Line* line)
 {
-    Vector2d p1 = line->Point1;
+    Vector2d p1 = line->getPoint1();
     Vector2d toProject = ball->getPos() - p1;
-    Vector2d onProject = line->Point2 - p1;
+    Vector2d surface = line->getPoint2() - p1;
 
-    float SqauredLength = line->Length * line->Length;
+    float sqauredLength = line->getLength() * line->getLength();
 
-    float project = std::max(0.f, std::min(SqauredLength, Vector2d::DotProduct(toProject, onProject))) / SqauredLength;
-    Vector2d ClosestPoint = p1 + project * onProject;
+    float project = std::max(0.f, std::min(sqauredLength, Vector2d::DotProduct(toProject, surface))) / sqauredLength;
+    Vector2d closestPoint = p1 + project * surface;
 
-    float Distance = (ball->getPos() - ClosestPoint).getModule();
+    float distance = Vector2d::Distance(ball->getPos(), closestPoint);
 
-    return Distance <= ball->getRadius() + line->Thickness / 2;
+    return distance <= ball->getRadius() + line->getThickness() / 2;
 }
 
 
 Ball* Collision::CheckCollision(Ball* ball, SoftBody* soft)
 {
-    Vector2d pos = ball->getPos();
-    float r = ball->getRadius();
-    Vector2d maxp = soft->getMaxPoint();
-    Vector2d minp = soft->getMinPoint();
-    if (pos.x <= maxp.x + r && pos.y <= maxp.y + r && pos.x >= minp.x - r && pos.y >= minp.y - r) {
-        for (unsigned i = 0; i < soft->getNumOfBalls(); i++) {
-            if (CheckCollision(ball, soft->getBall(i)))
-                return soft->getBall(i);
+    if (soft->isNear(ball)) {
+        Ball* candidate;
+        for (size_t i = 0; i < soft->getNumOfBalls(); i++) {
+            candidate = soft->getBall(i);
+            if (CheckCollision(ball, candidate))
+                return candidate;
         }
     }
     return nullptr;
@@ -43,11 +40,13 @@ Ball* Collision::CheckCollision(Ball* ball, SoftBody* soft)
 
 Line* Collision::CheckCollision(Ball* ball, Polygon* polygon)
 {
-    Line* line;
-    for (unsigned i = 0; i < polygon->getSizeofLines(); i++) {
-        line = polygon->getLine(i);
-        if (CheckCollision(ball, line))
-            return line;
+    if (polygon->isNear(ball)) {
+        Line* candidate;
+        for (size_t i = 0; i < polygon->getNumofLines(); i++) {
+            candidate = polygon->getLine(i);
+            if (CheckCollision(ball, candidate))
+                return candidate;
+        }
     }
     return nullptr;
 }
@@ -56,62 +55,65 @@ Line* Collision::CheckCollision(Ball* ball, Polygon* polygon)
 void Collision::Collide(Ball* ball1, Ball* ball2)
 {
     Vector2d dpos = ball1->getPos() - ball2->getPos();
-    float m = dpos.getModule();
+    float distance = dpos.getLength();
 
-    float Overlap = ball1->getRadius() + ball2->getRadius() - m;
-    Vector2d normal = 1 / m * dpos;
-    ball1->AddPos(Overlap / 2 * normal);
-    ball2->AddPos(-Overlap / 2 * normal);
+    float Overlap = ball1->getRadius() + ball2->getRadius() - distance;
+    Vector2d normalized = dpos / distance;
+    ball1->AddPos(Overlap / 2 * normalized);
+    ball2->AddPos(-Overlap / 2 * normalized);
 
     Vector2d v1 = ball1->getSpeed();
     Vector2d v2 = ball2->getSpeed();
 
-    float temp = 2 / ((ball1->getMass() + ball2->getMass()) * m * m);
+    float temp = 2 / ((ball1->getMass() + ball2->getMass()) * distance * distance);
 
     Vector2d newSpeed;
     newSpeed = -temp * ball2->getMass() * Vector2d::DotProduct(v1 - v2, dpos) * dpos;
     ball1->AddSpeed(newSpeed);
 
-    newSpeed = -temp * ball1->getMass() * Vector2d::DotProduct(v2 - v1, -dpos) * (-dpos);
+    newSpeed = temp * ball1->getMass() * Vector2d::DotProduct(v2 - v1, -dpos) * dpos;
     ball2->AddSpeed(newSpeed);
 }
 
 
 void Collision::Collide(Ball* ball, Line* line)
 {
-    float r = ball->getRadius() + line->Thickness / 2;
-    Vector2d p1 = line->Point1, p2 = line->Point2;
+    float max = ball->getRadius() + line->getThickness() / 2;
+
     Vector2d pos = ball->getPos();
+    Vector2d point1 = line->getPoint1();
+    Vector2d point2 = line->getPoint2();
+    float distToEdge1 = Vector2d::Distance(point1, pos);
+    float distToEdge2 = Vector2d::Distance(point2, pos);
     // edge
-    if ((p1 - pos).getModule() <= r) {
-        float m = (p1 - pos).getModule();
-        float dpos = m - r;
-        Vector2d normal = 1 / m * (p1 - pos);
-        ball->AddPos(dpos * normal);
+    if (distToEdge1 <= max)
+    {
+        float dpos = distToEdge1 - max;
+        Vector2d normalized = (point1 - pos) / distToEdge1;
+        ball->AddPos(dpos * normalized);
 
         ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
     }
     //edge
-    else if ((p2 - pos).getModule() <= r) {
-        float m = (p2 - pos).getModule();
-        float dpos = m - r;
-        Vector2d normal = (p2 - pos) / m;
-        ball->AddPos(dpos * normal);
+    else if (distToEdge2 <= max)
+    {
+        float dpos = distToEdge2 - max;
+        Vector2d normalized = (point2 - pos) / distToEdge2;
+        ball->AddPos(dpos * normalized);
 
         ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
     }
     //default
-    else {
-        float dpos = line->Distance(pos) - r;
-        if (dpos <= 0) {
-            Vector2d normal = line->Normal.getNormalized();
-            if (Vector2d::Orientation(p1, p2, pos) != 1)
-                normal = -normal;
-            ball->AddPos(dpos * normal);
+    else 
+    {
+        float dpos = line->Distance(pos) - max;
+        Vector2d normal = line->getNormal();
+        if (Vector2d::Orientation(point1, point2, pos) != 1)
+            normal = -normal;
+        ball->AddPos(dpos * normal);
 
-            Vector2d v = ball->getSpeed();
-            v = EnergyRemainAfterCollision * Vector2d::Reflect(v, line->Normal);
-            ball->AddSpeed(v - ball->getSpeed());
-        }
+        Vector2d v = ball->getSpeed();
+        v = EnergyRemainAfterCollision * Vector2d::Reflect(v, normal);
+        ball->AddSpeed(v - ball->getSpeed());
     }
 }

@@ -1,48 +1,48 @@
 #include "../../include/objects/SoftBall.hpp"
 
-#include <iostream>
 
 
-SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad,   \
-                   int BallCount, int BallRad, float ballDensity,const sf::Color& clr)
+SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad, int BallCount, const sf::Color& color)
+    : radius_(BodyRad)
 {
-    Rad = BodyRad;
-
     float tempx, tempy;
 
-    for(float angle = 0; angle < 360; angle += 360 / BallCount){
-        tempx = Rad * cos(angle * M_PI / 180);
-        tempy = Rad * sin(angle * M_PI / 180);
+    for(float angle = 0; angle < 360; angle += 360 / BallCount)
+    {
+        tempx = radius_ * cos(angle * M_PI / 180);
+        tempy = radius_ * sin(angle * M_PI / 180);
 
-        Balls.push_back(new Ball(StartPos + Vector2d(tempx, tempy),StartSpeed, BallRad, ballDensity, clr));
+        Balls.push_back(new Ball(StartPos + Vector2d(tempx, tempy), StartSpeed, ballRad, ballDensity, color));
     }
 
-    for(unsigned i =0; i < Balls.size(); i++){
+    for(unsigned i =0; i < Balls.size(); i++)
+    {
         if(i == Balls.size() - 1)
             Springs.push_back(new Spring(Balls[i], Balls[0]));
         else
             Springs.push_back(new Spring(Balls[i], Balls[i + 1]));
     }
 
-    NumOfBalls = Balls.size();
+    numOfBalls_ = Balls.size();
 }
 
 
-void SoftBall::ApplyEqautionOfIdealGas()
+void SoftBall::applyEqautionOfIdealGas()
 {
-    unsigned s = Balls.size() / 2;
+    size_t temp = numOfBalls_ / 2;
     Vector2d center;
-    for(unsigned i = 0; i < s; i++)
-        center += 0.5 * (Balls[i]->getPos() + Balls[i + s]->getPos());
-    center = {center.x / s, center.y / s};
+    for(size_t i = 0; i < temp; i++)
+        center += 0.5 * (Balls[i]->getPos() + Balls[i + temp]->getPos());
+    center = Vector2d(center.x / temp, center.y / temp);
 
     Vector2d normal, F, pos;
-    float Area = CalculateArea() / 20000;
+    float area = computeArea() / areaScale;
 
-    for(unsigned i = 0; i < s * 2; i++){
+    for(size_t i = 0; i < numOfBalls_; i++)
+    {
         pos = Balls[i]->getPos();
         normal = (pos - center).normalize();
-        F = nRT / Area * normal;
+        F = nRT / area * normal;
         Balls[i]->AddForce(F);
     }
 }
@@ -50,9 +50,10 @@ void SoftBall::ApplyEqautionOfIdealGas()
 
 void SoftBall::InnerForces()
 {
-    ApplyEqautionOfIdealGas();
+    applyEqautionOfIdealGas();
 
-    for(auto& spring: Springs){
+    for(auto& spring: Springs)
+    {
         spring->ApplyHookesForce();
         spring->ApplyDampingFactor();
         spring->ApplySelfCollision();
@@ -60,7 +61,7 @@ void SoftBall::InnerForces()
 }
 
 
-float SoftBall::CalculateArea() const
+float SoftBall::computeArea() const
 {
     float sum = 0;
     Vector2d pos1;

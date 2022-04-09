@@ -15,44 +15,44 @@
 
 
 class Engine{
+public:
+    Engine(const std::string& title, const sf::Color& color);
+    ~Engine();
+
+    void AddObject(Ball* object) { balls_.push_back(object), selector_.AddObject(object); }
+    void AddObject(SoftBody* object) { softBodies_.push_back(object), selector_.AddObject(object);}
+    void AddObject(Line* object){lines_.push_back(object);}
+    void AddObject(Polygon* object){polygons_.push_back(object);}
+
+    void Update(double dt);
+    void Render();
+
+    void HandleEvents();
+    bool isRunning() { return running_; }
+
 private:
-    sf::RenderWindow* Window;
-    sf::Color backgroundColor;
+    sf::RenderWindow* window_;
+    bool running_;
+    sf::Color backgroundColor_;
 
     SelectManager selector_;
 
     // acceleration of gravity
     Vector2d g;
 
-    std::vector<Ball*> Balls;
-    std::vector<SoftBody*> SoftBodies;
-    std::vector<Line*> Lines;
-    std::vector<Polygon*> Polygons;
+    std::vector<Ball*> balls_;
+    std::vector<SoftBody*> softBodies_;
+    std::vector<Line*> lines_;
+    std::vector<Polygon*> polygons_;
 
-    void ApplyGravity(RigidBody* object);
+    void applyGravity(RigidBody* object);
 
-    void ApplyCollisions(Ball* ball);
-    void ApplyCollisions(SoftBody* soft);
+    void applyCollisions(Ball* ball);
+    void applyCollisions(SoftBody* soft);
 
-    void UpdateBall(Ball* ball, double dt);
-    void UpdateSoftBody(SoftBody* soft, double dt);
+    void updateBall(Ball* ball, double elapsedTime);
+    void updateSoftBody(SoftBody* soft, double elapsedTime);
 
-    bool Pause;
-    void OnKeyPressed(const sf::Keyboard::Key& mpos);
-
-public:
-    Engine(const char* title, const sf::Color& clr);
-    ~Engine();
-
-    void AddObject(Ball* object) { Balls.push_back(object), selector_.AddObject(object); }
-    void AddObject(SoftBody* object) { SoftBodies.push_back(object), selector_.AddObject(object);}
-    void AddObject(Line* object){Lines.push_back(object);}
-    void AddObject(Polygon* object){Polygons.push_back(object);}
-
-
-    void Update(double dt);
-    void Render();
-
-    // return 1 if Window were closed, else 0
-    int HandleEvents();
+    bool pause_;
+    void onKeyPressed(const sf::Keyboard::Key& mousePos);
 };

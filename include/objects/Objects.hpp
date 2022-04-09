@@ -11,9 +11,6 @@ class SoftBody;
 
 class Selectable
 {
-protected:
-	bool selected_;
-
 public:
 	Selectable(): selected_(false) {}
 
@@ -24,6 +21,9 @@ public:
 
 	virtual void OnSelect(int param) = 0;
 	virtual void OnDeselect(int param) = 0;
+
+protected:
+	bool selected_;
 };
 
 

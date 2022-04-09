@@ -3,8 +3,8 @@
 #include "../../include/core/SelectManager.hpp"
 
 
-SelectManager::SelectManager(sf::RenderWindow* window):
-	selected_(nullptr), rightButton_(false), leftButton_(false)
+SelectManager::SelectManager(sf::RenderWindow* window)
+    : selected_(nullptr), rightButton_(false), leftButton_(false)
 {
 
 }
@@ -12,7 +12,8 @@ SelectManager::SelectManager(sf::RenderWindow* window):
 
 void SelectManager::Deselect()
 {
-    if (selected_ != nullptr) {
+    if (selected_ != nullptr)
+    {
         selected_->OnDeselect(SelectParam);
 
         selected_ = nullptr;
@@ -22,9 +23,10 @@ void SelectManager::Deselect()
 }
 
 
-Selectable* SelectManager::SelectObject(const Vector2d& mpos)
+Selectable* SelectManager::selectObject(const Vector2d& mpos)
 {
-    for (auto& object : objects_){
+    for (auto& object : objects_)
+    {
         if (object->isInside(mpos))
             return object;
     }
@@ -32,28 +34,31 @@ Selectable* SelectManager::SelectObject(const Vector2d& mpos)
 }
 
 
-void SelectManager::OnMouseButtonPressed(const Vector2d& mpos, const sf::Mouse::Button& button)
+void SelectManager::onMouseButtonPressed(const Vector2d& mpos, const sf::Mouse::Button& button)
 {
-    Selectable* candidate = SelectObject(mpos);
+    Selectable* candidate = selectObject(mpos);
 
-    if (candidate != nullptr) {
-        if (selected_ != candidate || selected_ == nullptr) {
+    if (candidate != nullptr) 
+    {
+        if (selected_ != candidate || selected_ == nullptr) 
+        {
             if (selected_ != nullptr)
                 selected_->OnDeselect(SelectParam);
             selected_ = candidate;
             selected_->OnSelect(SelectParam);
         }
         if (button == sf::Mouse::Right)
-            OnRightButtonPressed(mpos);
+            onRightButtonPressed(mpos);
         else if (button == sf::Mouse::Left)
-            OnLeftButtonPressed(mpos);
+            onLeftButtonPressed(mpos);
     }
 }
 
 
-void SelectManager::OnMouseMoved(const Vector2d& mpos)
+void SelectManager::onMouseMoved(const Vector2d& mpos)
 {
-    if (selected_ != nullptr) {
+    if (selected_ != nullptr) 
+    {
         if (rightButton_)
             selected_->OnRightMouseMove(mpos);
         else if (leftButton_)
@@ -64,17 +69,20 @@ void SelectManager::OnMouseMoved(const Vector2d& mpos)
 
 sf::Event::EventType SelectManager::HandleMousePos(sf::RenderWindow* window, const sf::Event& event)
 {
-    if (event.type == sf::Event::MouseMoved) {
+    if (event.type == sf::Event::MouseMoved) 
+    {
         Vector2d mpos = sf::Mouse::getPosition(*window);
-        OnMouseMoved(mpos);
+        onMouseMoved(mpos);
     }
-    else if (event.type == sf::Event::MouseButtonReleased) {
+    else if (event.type == sf::Event::MouseButtonReleased) 
+    {
         Vector2d mpos = sf::Mouse::getPosition(*window);
-        OnMouseButtonReleased(mpos);
+        onMouseButtonReleased(mpos);
     }
-    else if (event.type == sf::Event::MouseButtonPressed) {
+    else if (event.type == sf::Event::MouseButtonPressed) 
+    {
         Vector2d mpos = sf::Mouse::getPosition(*window);
-        OnMouseButtonPressed(mpos, event.mouseButton.button);
+        onMouseButtonPressed(mpos, event.mouseButton.button);
     }
 
     return event.type;

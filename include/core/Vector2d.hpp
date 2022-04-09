@@ -16,7 +16,7 @@ struct Vector2d{
     Vector2d(const sf::Vector2f& v) { x = v.x, y = v.y; }
     Vector2d(const sf::Vector2i& v) { x = (float)v.x, y = (float)v.y; }
 
-    float getModule() const {return std::sqrt(x * x + y * y);}
+    float getLength() const {return std::sqrt(x * x + y * y);}
     Vector2d getNormalized() const;
     Vector2d& normalize();
 
@@ -39,7 +39,7 @@ struct Vector2d{
 
     static float DotProduct(const Vector2d& v1, const Vector2d& v2) {return v1.x * v2.x + v1.y * v2.y;}
     static Vector2d Reflect(const Vector2d& ToReflect, const Vector2d& v);
-    static float Distance(const Vector2d& v1, const Vector2d& v2) { return (v1 - v2).getModule(); }
+    static float Distance(const Vector2d& v1, const Vector2d& v2) { return (v1 - v2).getLength(); }
     // 0 --> p, q and r are collinear
     // 1 --> Clockwise
     // 2 --> Counterclockwise

@@ -17,13 +17,13 @@ public:
     virtual void Move(double time) override;
     virtual void Move(const Vector2d& distance) override;
 
-    Vector2d getSpeed()const { return speed_; }
-    Vector2d getPos() const { return pos_; }
-    Vector2d getForce() const { return force_; }
-    float getMass() const { return mass_; }
+    Vector2d getSpeed() const  { return speed_; }
+    Vector2d getPos()   const  { return pos_;   }
+    Vector2d getForce() const  { return force_; }
+    float    getMass()  const  { return mass_;  }
 
     void AddSpeed(const Vector2d& speed) { speed_ += speed; }
-    void AddPos(const Vector2d& pos) { pos_ += pos; }
+    void AddPos(const Vector2d& pos)     { pos_ += pos;     }
     void AddForce(const Vector2d& force) { force_ += force; }
 
 private:

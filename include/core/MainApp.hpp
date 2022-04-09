@@ -4,18 +4,16 @@
 
 
 class MainApp{
-private:
-    bool Running;
-    bool Init;
-
-    Engine* PhysicEngine;
-
 public:
     MainApp();
     ~MainApp();
 
     void InitObjects();
-
     void Start();
+
+private:
+    void gameLoop();
+
+    Engine* physicEngine_;
 };
 

@@ -1,40 +1,41 @@
 #include "../../include/objects/Ball.hpp"
 
 
-Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr):
-    RigidBody{StartPos, StartSpeed, Rad * Rad * Rad * density }, Density{density}, Radius{Rad}, DrawSpeed(false)
+Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& color):
+    RigidBody{ StartPos, StartSpeed, Rad * Rad * Rad * density }, 
+    density_{density}, radius_{Rad}, DrawSpeed(false)
 {
-    DrawShape.setRadius(Rad);
-    DrawShape.setPointCount(100);
-    DrawShape.setPosition(StartPos.x - Radius, StartPos.y - Radius);
-    DrawShape.setFillColor(clr);
+    toDraw_.setRadius(Rad);
+    toDraw_.setPointCount(100);
+    toDraw_.setPosition(StartPos.x - radius_, StartPos.y - radius_);
+    toDraw_.setFillColor(color);
 }
 
 
-void Ball::OnLeftMouseMove(const Vector2d& mousePos)
+inline void Ball::OnLeftMouseMove(const Vector2d& mousePos)
 { 
     Move(mousePos - getPos()); 
 }
 
 
-void Ball::OnRightMouseMove(const Vector2d& mousePos)
+inline void Ball::OnRightMouseMove(const Vector2d& mousePos)
 { 
     AddSpeed(0.2f * (mousePos - getPos()) - getSpeed()); 
 }
 
 
-bool Ball::isInside(const Vector2d& mousePos)
+inline bool Ball::isInside(const Vector2d& mousePos)
 {
-    return Vector2d::Distance(getPos(), mousePos) < Radius;
+    return Vector2d::Distance(getPos(), mousePos) < radius_;
 }
 
 
 void Ball::OnSelect(int thickness)
 {
     float thickf = (float)thickness;
-    DrawShape.setRadius(Radius - thickf);
-    DrawShape.setOutlineThickness(thickf);
-    DrawShape.setOutlineColor({ 0, 255, 0 });
+    toDraw_.setRadius(radius_ - thickf);
+    toDraw_.setOutlineThickness(thickf);
+    toDraw_.setOutlineColor({ 0, 255, 0 });
 
     AddPos(Vector2d(thickf, thickf));
 
@@ -44,11 +45,11 @@ void Ball::OnSelect(int thickness)
 
 void Ball::OnDeselect(int thickness)
 {
-    AddPos(-Vector2d(DrawShape.getOutlineThickness(), DrawShape.getOutlineThickness()));
+    AddPos(-Vector2d(toDraw_.getOutlineThickness(), toDraw_.getOutlineThickness()));
 
-    DrawShape.setRadius(Radius);
-    DrawShape.setOutlineThickness(0);
-    DrawShape.setOutlineColor(DrawShape.getFillColor());
+    toDraw_.setRadius(radius_);
+    toDraw_.setOutlineThickness(0);
+    toDraw_.setOutlineColor(toDraw_.getFillColor());
 
     DrawSpeed = selected_ = false;
 }
@@ -61,7 +62,7 @@ void Ball::drawSpeed(sf::RenderWindow* wnd)
     Vector2d vec = 7 * speed + pos;
     Vector2d nvec = speed.getNormalized();
     float width;
-    if(speed.getModule() < 5)
+    if(speed.getLength() < 5)
         width = 3.f;
     else
         width = 4.f;
@@ -90,9 +91,9 @@ void Ball::drawSpeed(sf::RenderWindow* wnd)
 void Ball::Draw(sf::RenderWindow* wnd)
 {
     Vector2d pos = getPos();
-    DrawShape.setPosition(pos.x - Radius, pos.y - Radius);
+    toDraw_.setPosition(pos.x - radius_, pos.y - radius_);
 
-    wnd->draw(DrawShape);
+    wnd->draw(toDraw_);
      
     if(DrawSpeed)
         drawSpeed(wnd);

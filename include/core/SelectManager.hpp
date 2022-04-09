@@ -26,13 +26,13 @@ private:
 
     static const int SelectParam = 2;
 
-    Selectable* SelectObject(const Vector2d& mpos);
+    Selectable* selectObject(const Vector2d& mpos);
     
-    void OnRightButtonPressed(const Vector2d& mpos) { rightButton_ = true; }
-    void OnLeftButtonPressed(const Vector2d& mpos) { leftButton_ = true; }
+    void onRightButtonPressed(const Vector2d& mpos) { rightButton_ = true; }
+    void onLeftButtonPressed(const Vector2d& mpos) { leftButton_ = true; }
 
-    void OnMouseButtonReleased(const Vector2d& mpos) { rightButton_ = leftButton_ = false; }
-    void OnMouseButtonPressed(const Vector2d& mpos, const sf::Mouse::Button& button);
+    void onMouseButtonReleased(const Vector2d& mpos) { rightButton_ = leftButton_ = false; }
+    void onMouseButtonPressed(const Vector2d& mpos, const sf::Mouse::Button& button);
 
-    void OnMouseMoved(const Vector2d& mpos);
+    void onMouseMoved(const Vector2d& mpos);
 };

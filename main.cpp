@@ -4,12 +4,10 @@
 
 int main()
 {
-    MainApp* App = new MainApp();
+    MainApp App;
 
-    App->InitObjects();
-    App->Start();
-
-    delete App;
+    App.InitObjects();
+    App.Start();
 
     return 0;
 }

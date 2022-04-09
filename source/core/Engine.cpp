@@ -2,96 +2,100 @@
 
 #include "../../include/core/Engine.hpp"
 
+#include <iostream>
 
-Engine::Engine(const char* title, const sf::Color& clr):
-    selector_(Window), backgroundColor(clr), g(0, 7), Pause(1)
+Engine::Engine(const std::string& title, const sf::Color& color)
+    : selector_(window_), backgroundColor_(color), g(0, 7), pause_(true), running_(true)
 {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
-    Window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), "AHAHHA", sf::Style::Close, settings);
-    Window->setFramerateLimit(FPS);
+    window_ = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), title, sf::Style::Close, settings);
+    window_->setFramerateLimit(FPS);
 }
 
 
-void Engine::Update(double dt)
+void Engine::Update(double elapsedTime)
 {
-    if(!Pause){
-       for(auto& ball: Balls){
-            UpdateBall(ball, dt);
-        }
+    if(pause_ == false)
+    {
+        for(auto& ball: balls_)
+            updateBall(ball, elapsedTime);
 
-        for(auto& sb: SoftBodies){
-            UpdateSoftBody(sb, dt);
-        }
+        for(auto& soft: softBodies_)
+            updateSoftBody(soft, elapsedTime);
     }
 }
 
 
-void Engine::UpdateBall(Ball* ball, double dt)
+void Engine::updateBall(Ball* ball, double elapsedTime)
 {
-    ApplyCollisions(ball);
-    ball->Move(dt);
+    applyCollisions(ball);
+    ball->Move(elapsedTime);
 }
 
 
-void Engine::UpdateSoftBody(SoftBody* soft, double dt)
+void Engine::updateSoftBody(SoftBody* soft, double elapsedTime)
 {
-    ApplyCollisions(soft);
+    applyCollisions(soft);
     soft->InnerForces();
-    soft->Move(dt);
+    soft->Move(elapsedTime);
 }
 
 
-void Engine::ApplyCollisions(SoftBody* soft)
+void Engine::applyCollisions(SoftBody* soft)
 {
     Ball* ball;
     Ball* otherball;
-    unsigned num = soft->getNumOfBalls();
+    size_t num = soft->getNumOfBalls();
 
-    for (unsigned j = 0; j < num; j++) {
-        ball = soft->getBall(j);
-
-        for (auto& target : SoftBodies) {
-            if (target != soft) {
-                otherball = Collision::CheckCollision(ball, target);
+    for (size_t i = 0; i < num; i++) 
+    {
+        ball = soft->getBall(i);
+        for (auto& othersoft : softBodies_) 
+        {
+            if (othersoft != soft)
+            {
+                otherball = Collision::CheckCollision(ball, othersoft);
                 if (otherball != nullptr)
                     Collision::Collide(ball, otherball);
             }
         }
-        ApplyCollisions(ball);
-
-        ApplyGravity(ball);
+        applyCollisions(ball);
+        applyGravity(ball);
     }
 }
 
 
-void Engine::ApplyCollisions(Ball* ball)
+void Engine::applyCollisions(Ball* ball)
 {
-    for(auto& target: Balls){
-        if(ball != target){
+    for(auto& target: balls_)
+    {
+        if(ball != target)
+        {
             if(Collision::CheckCollision(ball, target))
                 Collision::Collide(ball, target);
         }
     }
+
     Line* line;
-    for(auto& pol: Polygons){
-        if(pol->isNear(ball)){
-            line = Collision::CheckCollision(ball, pol);
-            if(line != nullptr)
-                Collision::Collide(ball, line);
-        }
-    }
-    for(auto& line: Lines){
-        if(Collision::CheckCollision(ball, line))
+    for(auto& pol: polygons_)
+    {
+        line = Collision::CheckCollision(ball, pol);
+        if(line != nullptr)
             Collision::Collide(ball, line);
     }
 
-    ApplyGravity(ball);
+    for(auto& line: lines_)
+    {
+        if(Collision::CheckCollision(ball, line))
+            Collision::Collide(ball, line);
+    }
+    applyGravity(ball);
 }
 
 
-void Engine::ApplyGravity(RigidBody* object)
+void Engine::applyGravity(RigidBody* object)
 {
     object->AddForce(object->getMass() * g - object->getForce());
 }
@@ -99,75 +103,66 @@ void Engine::ApplyGravity(RigidBody* object)
 
 void Engine::Render()
 {
-    Window->clear(backgroundColor);
+    window_->clear(backgroundColor_);
 
-    for(auto& object: Lines){
-        object->Draw(Window);
-    }
+    for(auto& line: lines_)
+        line->Draw(window_);
 
-    for(auto& object: Polygons){
-        object->Draw(Window);
-    }
+    for(auto& polygon: polygons_)
+        polygon->Draw(window_);
 
-    for(auto& object: Balls){
-        object->Draw(Window);
-    }
+    for (auto& ball : balls_)
+        ball->Draw(window_);
 
-    for(auto& object: SoftBodies){
-        object->Draw(Window);
-    }
-
-    Window->display();
+    for(auto& soft: softBodies_)
+        soft->Draw(window_);
+    window_->display();
 }
 
 
-void Engine::OnKeyPressed(const sf::Keyboard::Key& keycode)
+void Engine::onKeyPressed(const sf::Keyboard::Key& keycode)
 {
-    if(keycode == sf::Keyboard::Space){
-        if(Pause)
+    if(keycode == sf::Keyboard::Space)
+    {
+        if(pause_ == true)
             selector_.Deselect();
 
-        Pause = !Pause;
+        pause_ = !pause_;
     }
 }
 
 
-int Engine::HandleEvents()
+void Engine::HandleEvents()
 {
     sf::Event event;
 
-    while (Window->pollEvent(event))
+    while (window_->pollEvent(event))
     {
-        if (event.type == sf::Event::Closed){
-            return 1;
-        }
-        else if (event.type == sf::Event::KeyPressed) {
-            OnKeyPressed(event.key.code);
-        }
+        if (event.type == sf::Event::Closed)
+            running_ = false;
 
-        else if (Pause)
-        {
-            selector_.HandleMousePos(Window, event);
-        }
+        else if (event.type == sf::Event::KeyPressed)
+            onKeyPressed(event.key.code);
+
+        else if (pause_)
+            selector_.HandleMousePos(window_, event);
     }
-    return 0;
 }
 
 
 Engine::~Engine()
 {
-    for(auto& object: Balls){
-        delete object;
-    }
-    for(auto& object: Lines){
-        delete object;
-    }
-    for(auto& object: Polygons){
-        delete object;
-    }
-    for(auto& object: SoftBodies){
-        delete object;
-    }
+    for(auto& ball: balls_)
+        delete ball;
 
-    delete Window;
+    for(auto& line: lines_)
+        delete line;
+
+    for(auto& polygon : polygons_)
+        delete polygon;
+
+    for(auto& soft: softBodies_)
+        delete soft;
+
+    delete window_;
 }
