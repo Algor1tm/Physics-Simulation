@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOT_IDEAL_COLLISIONS
 
 #ifndef WIDTH
 #define WIDTH 867

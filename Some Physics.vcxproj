@@ -53,6 +53,7 @@
     <ClCompile Include="source\objects\SoftBall.cpp" />
     <ClCompile Include="source\objects\SoftBody.cpp" />
     <ClCompile Include="source\objects\SoftRectangle.cpp" />
+    <ClCompile Include="source\objects\Spring.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

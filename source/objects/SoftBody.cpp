@@ -8,7 +8,7 @@ SoftBody::SoftBody()
 }
 
 
-void SoftBody::Move(double time)
+void SoftBody::Move(float time)
 {
     for (auto& ball : Balls)
         ball->Move(time);
@@ -33,13 +33,49 @@ bool SoftBody::isNear(Ball* ball)
 }
 
 
-void SoftBody::Draw(sf::RenderWindow* wnd)
+void SoftBody::drawSpeed(sf::RenderWindow* window)
+{
+    Vector2d speed;
+    for (auto& ball : Balls)
+        speed += ball->getSpeed();
+    speed = speed / (float)numOfBalls_;
+    Vector2d pos = getCenter();
+
+    Vector2d vec = 7 * 7 * speed + pos;
+    Vector2d nvec = speed.getNormalized();
+    float width = 4;
+    Vector2d w = (2.f * width / (float)tan(M_PI / 6)) * nvec;
+    Vector2d normal = { pos.y - vec.y, vec.x - pos.x };
+    normal.normalize();
+
+    sf::ConvexShape Arrow;
+    Arrow.setFillColor({ 50, 200, 50 });
+
+    Arrow.setPointCount(4);
+    Arrow.setPoint(0, pos - width * normal);
+    Arrow.setPoint(1, pos + width * normal);
+    Arrow.setPoint(2, vec - w + width * normal);
+    Arrow.setPoint(3, vec - w - width * normal);
+    window->draw(Arrow);
+
+    Arrow.setPointCount(3);
+    Arrow.setPoint(0, vec - w - 2 * width * normal);
+    Arrow.setPoint(1, vec - w + 2 * width * normal);
+    Arrow.setPoint(2, vec);
+    window->draw(Arrow);
+}
+
+
+void SoftBody::Draw(sf::RenderWindow* window)
 {
     for (auto& spring : Springs)
-        spring->Draw(wnd);
+        spring->Draw(window);
 
     for (auto& ball : Balls)
-        ball->Draw(wnd);
+        ball->Draw(window);
+
+    if (selected_)
+        drawSpeed(window);
 }
 
 
@@ -59,6 +95,13 @@ inline void SoftBody::OnLeftMouseMove(const Vector2d& mousePos)
 }
 
 
+inline void SoftBody::OnRightMouseMove(const Vector2d& mousePos)
+{
+    for(auto& ball: Balls)
+        ball->AddSpeed(0.03f * (mousePos - ball->getPos()) - ball->getSpeed());
+}
+
+
 void SoftBody::OnSelect(int thickness)
 {
     for (auto& ball : Balls) 
@@ -66,6 +109,7 @@ void SoftBody::OnSelect(int thickness)
         ball->OnSelect(selectThickness_);
         ball->DrawSpeed = false;
     }
+    selected_ = true;
 }
 
 
@@ -73,6 +117,8 @@ void SoftBody::OnDeselect(int thickness)
 {
     for (auto& ball : Balls)
         ball->OnDeselect(selectThickness_);
+
+    selected_ = false;
 }
 
 
@@ -83,66 +129,4 @@ SoftBody::~SoftBody()
     for (auto& spring : Springs)
         delete spring;
 }
-
-
-
-
-SoftBody::Spring::Spring(Ball* ball1, Ball* ball2)
-    : ball1_(ball1), ball2_(ball2), cache_(ball1_->getRadius() + ball2_->getRadius())
-{
-    defaultVector_ = ball1->getPos() - ball2->getPos();
-    defaultLength_ = defaultVector_.getLength();
-}
-
-
-void SoftBody::Spring::ApplySelfCollision()
-{
-    Vector2d dpos = ball1_->getPos()- ball2_->getPos();
-
-    float distance = dpos.getLength();
-    if(cache_ >= distance + 1 && distance != 0)
-    {
-        dpos = dpos / (2 * distance);
-        ball1_->AddPos(dpos);
-        ball2_->AddPos(-dpos);
-    }
-}
-
-
-void SoftBody::Spring::ApplyDampingFactor()
-{
-    Vector2d dpos = ball2_->getPos() - ball1_->getPos();
-    dpos.normalize();
-
-    Vector2d dspeed = ball2_->getSpeed() - ball1_->getSpeed();
-    float D =  Spring::Kd * Vector2d::DotProduct(dspeed, dpos);
-    Vector2d Damping = D * dpos;
-
-    ball1_->AddForce(Damping);
-    ball2_->AddForce(-Damping);
-}
-
-
-void SoftBody::Spring::ApplyHookesForce()
-{
-    Vector2d dpos = ball1_->getPos() - ball2_->getPos();
-    float distance = dpos.getLength();
-    float dx = distance - defaultLength_;
-
-    Vector2d F = Spring::Ks * dx / distance * dpos;
-
-    ball1_->AddForce(-F);
-    ball2_->AddForce(F);
-}
-
-
-void SoftBody::Spring::Draw(sf::RenderWindow* window)
-{
-    sf::Vertex line[] = {
-        sf::Vertex({ ball1_->getPos().x, ball1_->getPos().y }),
-        sf::Vertex({ ball2_->getPos().x, ball2_->getPos().y })
-    };
-    window->draw(line, 2, sf::Lines);
-}
-
 

@@ -10,7 +10,7 @@
 class Polygon{
 public:
     // declare points only in CLOCKWISE order
-    Polygon(const std::vector<Vector2d>& points, int thickness);
+    Polygon(const std::vector<Vector2d>& points, float thickness);
     ~Polygon();
 
     void Draw(sf::RenderWindow* window);
@@ -27,6 +27,6 @@ private:
     Vector2d maxPoint_;
     Vector2d minPoint_;
 
-    int thickness_;
+    float thickness_;
 };
 

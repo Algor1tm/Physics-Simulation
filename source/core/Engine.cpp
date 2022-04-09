@@ -1,11 +1,8 @@
-#pragma warning(disable : 26812)
-
 #include "../../include/core/Engine.hpp"
 
-#include <iostream>
 
 Engine::Engine(const std::string& title, const sf::Color& color)
-    : selector_(window_), backgroundColor_(color), g(0, 7), pause_(true), running_(true)
+    : selector_(window_), backgroundColor_(color), gravity(0, 7), pause_(true), running_(true)
 {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
@@ -15,7 +12,7 @@ Engine::Engine(const std::string& title, const sf::Color& color)
 }
 
 
-void Engine::Update(double elapsedTime)
+void Engine::Update(float elapsedTime)
 {
     if(pause_ == false)
     {
@@ -28,14 +25,14 @@ void Engine::Update(double elapsedTime)
 }
 
 
-void Engine::updateBall(Ball* ball, double elapsedTime)
+void Engine::updateBall(Ball* ball, float elapsedTime)
 {
     applyCollisions(ball);
     ball->Move(elapsedTime);
 }
 
 
-void Engine::updateSoftBody(SoftBody* soft, double elapsedTime)
+void Engine::updateSoftBody(SoftBody* soft, float elapsedTime)
 {
     applyCollisions(soft);
     soft->InnerForces();
@@ -62,6 +59,7 @@ void Engine::applyCollisions(SoftBody* soft)
             }
         }
         applyCollisions(ball);
+
         applyGravity(ball);
     }
 }
@@ -91,13 +89,14 @@ void Engine::applyCollisions(Ball* ball)
         if(Collision::CheckCollision(ball, line))
             Collision::Collide(ball, line);
     }
+
     applyGravity(ball);
 }
 
 
 void Engine::applyGravity(RigidBody* object)
 {
-    object->AddForce(object->getMass() * g - object->getForce());
+    object->AddForce(object->getMass() * gravity - object->getForce());
 }
 
 

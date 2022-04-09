@@ -55,7 +55,7 @@ void Ball::OnDeselect(int thickness)
 }
 
 
-void Ball::drawSpeed(sf::RenderWindow* wnd)
+void Ball::drawSpeed(sf::RenderWindow* window)
 {
     Vector2d speed = getSpeed();
     Vector2d pos = getPos();
@@ -78,23 +78,23 @@ void Ball::drawSpeed(sf::RenderWindow* wnd)
     Arrow.setPoint(1, pos + width * normal);
     Arrow.setPoint(2, vec - w + width * normal);
     Arrow.setPoint(3, vec - w - width * normal);
-    wnd->draw(Arrow);
+    window->draw(Arrow);
 
     Arrow.setPointCount(3);
     Arrow.setPoint(0, vec - w - 2 * width * normal);
     Arrow.setPoint(1, vec - w + 2 * width * normal);
     Arrow.setPoint(2, vec);
-    wnd->draw(Arrow);
+    window->draw(Arrow);
 }
 
 
-void Ball::Draw(sf::RenderWindow* wnd)
+void Ball::Draw(sf::RenderWindow* window)
 {
     Vector2d pos = getPos();
     toDraw_.setPosition(pos.x - radius_, pos.y - radius_);
 
-    wnd->draw(toDraw_);
+    window->draw(toDraw_);
      
     if(DrawSpeed)
-        drawSpeed(wnd);
+        drawSpeed(window);
 }

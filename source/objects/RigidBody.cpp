@@ -8,7 +8,7 @@ RigidBody::RigidBody(const Vector2d& startPos, const Vector2d& startSpeed, float
 }
 
 
-void RigidBody::Move(double time)
+void RigidBody::Move(float time)
 {
     speed_ += (MovAble::AccelFactor * time / mass_ * force_);
     pos_ += (MovAble::SpeedFactor * time * speed_);

@@ -14,7 +14,7 @@ public:
 
     virtual void Draw(sf::RenderWindow* window) = 0;
 
-    virtual void Move(double time) override;
+    virtual void Move(float time) override;
     virtual void Move(const Vector2d& distance) override;
 
     Vector2d getSpeed() const  { return speed_; }

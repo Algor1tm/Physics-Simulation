@@ -8,7 +8,7 @@
 // ax + by + c = 0;
 class Line{
 public:
-    Line(const Vector2d& point1, const Vector2d& point2, int thickness, const sf::Color& color = sf::Color::White);
+    Line(const Vector2d& point1, const Vector2d& point2, float thickness, const sf::Color& color = sf::Color::White);
     virtual ~Line() = default;
 
     float Distance(const Vector2d& point);

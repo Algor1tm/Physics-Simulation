@@ -40,6 +40,7 @@ struct Vector2d{
     static float DotProduct(const Vector2d& v1, const Vector2d& v2) {return v1.x * v2.x + v1.y * v2.y;}
     static Vector2d Reflect(const Vector2d& ToReflect, const Vector2d& v);
     static float Distance(const Vector2d& v1, const Vector2d& v2) { return (v1 - v2).getLength(); }
+    static Vector2d Random(const Vector2d& x_range, const Vector2d& y_range);
     // 0 --> p, q and r are collinear
     // 1 --> Clockwise
     // 2 --> Counterclockwise

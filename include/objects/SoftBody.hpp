@@ -15,14 +15,14 @@ public:
 
     virtual void InnerForces() = 0;
 
-    virtual void Move(double time) override;
+    virtual void Move(float time) override;
     virtual void Move(const Vector2d& distance) override;
 
     virtual bool isInside(const Vector2d& mousePos) override;
     // user moving object
     void OnLeftMouseMove(const Vector2d& mousePos) override;
-    // none
-    void OnRightMouseMove(const Vector2d& mousePos) override {};
+    // user change speed
+    void OnRightMouseMove(const Vector2d& mousePos) override;
     void OnSelect(int thickness) override;
     void OnDeselect(int thickness) override;
 
@@ -38,6 +38,7 @@ public:
 
 private:
     const int selectThickness_ = 1;
+    void drawSpeed(sf::RenderWindow* window);
 
 protected:
     class Spring;

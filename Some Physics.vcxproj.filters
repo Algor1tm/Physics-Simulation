@@ -42,5 +42,6 @@
     <ClCompile Include="source\objects\RigidBody.cpp" />
     <ClCompile Include="source\core\Collision.cpp" />
     <ClCompile Include="source\core\SelectManager.cpp" />
+    <ClCompile Include="source\objects\Spring.cpp" />
   </ItemGroup>
 </Project>

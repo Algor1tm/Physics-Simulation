@@ -30,7 +30,7 @@ protected:
 class MovAble
 {
 public:
-	virtual void Move(double time) = 0;
+	virtual void Move(float time) = 0;
 	virtual void Move(const Vector2d& distance) = 0;
 
 	static constexpr float SpeedFactor = 30.f;

@@ -11,6 +11,14 @@ Vector2d Vector2d::Reflect(const Vector2d& ToReflect, const Vector2d& v)
 }
 
 
+Vector2d Vector2d::Random(const Vector2d& x_range, const Vector2d& y_range)
+{
+    float x = std::rand() % (int)(x_range.y - x_range.x) + x_range.x;
+    float y = std::rand() % (int)(y_range.y - y_range.x) + y_range.x;
+    return Vector2d(x, y);
+}
+
+
 int Vector2d::Orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
 {
     float val = (q.y - p.y) * (r.x - q.x) -

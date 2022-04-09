@@ -1,7 +1,7 @@
 #include "../../include/objects/Polygon.hpp"
 
 
-Polygon::Polygon(const std::vector<Vector2d>& points, int thickness)
+Polygon::Polygon(const std::vector<Vector2d>& points, float thickness)
     :maxPoint_(points[0]), minPoint_(points[0]), thickness_(thickness)
 {
     for(size_t i = 0; i < points.size(); i++){

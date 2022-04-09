@@ -3,14 +3,14 @@
 
 
 SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad, int BallCount, const sf::Color& color)
-    : radius_(BodyRad)
+    : SoftBody(), radius_(BodyRad)
 {
     float tempx, tempy;
 
     for(float angle = 0; angle < 360; angle += 360 / BallCount)
     {
-        tempx = radius_ * cos(angle * M_PI / 180);
-        tempy = radius_ * sin(angle * M_PI / 180);
+        tempx = radius_ * cosf(angle * (float)M_PI / 180);
+        tempy = radius_ * sinf(angle * (float)M_PI / 180);
 
         Balls.push_back(new Ball(StartPos + Vector2d(tempx, tempy), StartSpeed, ballRad, ballDensity, color));
     }
@@ -75,7 +75,7 @@ float SoftBall::computeArea() const
         sum += (pos1.x + pos2.x) * (pos1.y - pos2.y);
         j = i;
     }
-    return 0.5 * fabs(sum);
+    return 0.5f * fabs(sum);
 }
 
 

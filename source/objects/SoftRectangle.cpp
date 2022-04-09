@@ -2,8 +2,8 @@
 
 
 SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed,  \
-                             int width, int height, const sf::Color& color):
-    width_(width), height_(height)
+                             int width, int height, const sf::Color& color)
+    : SoftBody(), width_(width), height_(height)
 {
     Vector2d pos = StartPos;
 

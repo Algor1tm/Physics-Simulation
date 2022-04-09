@@ -14,6 +14,7 @@
 #include "Vector2d.hpp"
 
 
+
 class Engine{
 public:
     Engine(const std::string& title, const sf::Color& color);
@@ -24,7 +25,7 @@ public:
     void AddObject(Line* object){lines_.push_back(object);}
     void AddObject(Polygon* object){polygons_.push_back(object);}
 
-    void Update(double dt);
+    void Update(float dt);
     void Render();
 
     void HandleEvents();
@@ -37,8 +38,7 @@ private:
 
     SelectManager selector_;
 
-    // acceleration of gravity
-    Vector2d g;
+    Vector2d gravity;
 
     std::vector<Ball*> balls_;
     std::vector<SoftBody*> softBodies_;
@@ -50,8 +50,8 @@ private:
     void applyCollisions(Ball* ball);
     void applyCollisions(SoftBody* soft);
 
-    void updateBall(Ball* ball, double elapsedTime);
-    void updateSoftBody(SoftBody* soft, double elapsedTime);
+    void updateBall(Ball* ball, float elapsedTime);
+    void updateSoftBody(SoftBody* soft, float elapsedTime);
 
     bool pause_;
     void onKeyPressed(const sf::Keyboard::Key& mousePos);

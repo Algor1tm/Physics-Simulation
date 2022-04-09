@@ -81,6 +81,7 @@ void Collision::Collide(Ball* ball, Line* line)
     float max = ball->getRadius() + line->getThickness() / 2;
 
     Vector2d pos = ball->getPos();
+    Vector2d speed = ball->getSpeed();
     Vector2d point1 = line->getPoint1();
     Vector2d point2 = line->getPoint2();
     float distToEdge1 = Vector2d::Distance(point1, pos);
@@ -92,7 +93,7 @@ void Collision::Collide(Ball* ball, Line* line)
         Vector2d normalized = (point1 - pos) / distToEdge1;
         ball->AddPos(dpos * normalized);
 
-        ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
+        ball->AddSpeed(-2 * speed);
     }
     //edge
     else if (distToEdge2 <= max)
@@ -101,7 +102,7 @@ void Collision::Collide(Ball* ball, Line* line)
         Vector2d normalized = (point2 - pos) / distToEdge2;
         ball->AddPos(dpos * normalized);
 
-        ball->AddSpeed(-EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
+        ball->AddSpeed(-2 * speed);
     }
     //default
     else 
@@ -112,8 +113,11 @@ void Collision::Collide(Ball* ball, Line* line)
             normal = -normal;
         ball->AddPos(dpos * normal);
 
-        Vector2d v = ball->getSpeed();
-        v = EnergyRemainAfterCollision * Vector2d::Reflect(v, normal);
-        ball->AddSpeed(v - ball->getSpeed());
+        speed = Vector2d::Reflect(speed, normal);
+        ball->AddSpeed(speed - ball->getSpeed());
     }
+
+#ifdef NOT_IDEAL_COLLISIONS
+    ball->AddSpeed(EnergyRemainAfterCollision * ball->getSpeed() - ball->getSpeed());
+#endif // NOT_IDEAL_COLLISIONS
 }
