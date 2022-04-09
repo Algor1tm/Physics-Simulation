@@ -1,54 +1,74 @@
 #pragma once
 
-#include "PhysicalObjects.hpp"
+#include <SFML/Graphics.hpp>
+
 #include "../core/Vector2d.hpp"
+#include "Objects.hpp"
 #include "Ball.hpp"
 
 
-class SoftBody: public MovAble, public DrawAble{
+class SoftBody: public MovAble, public Selectable
+{
+public:
+    SoftBody();
+    virtual ~SoftBody();
+
+    virtual void InnerForces() = 0;
+
+    virtual void Move(float time) override;
+    virtual void Move(const Vector2d& distance) override;
+
+    virtual bool isInside(const Vector2d& mousePos) override;
+    // user moving object
+    void OnLeftMouseMove(const Vector2d& mousePos) override;
+    // user change speed
+    void OnRightMouseMove(const Vector2d& mousePos) override;
+    void OnSelect(int thickness) override;
+    void OnDeselect(int thickness) override;
+
+    virtual void Draw(sf::RenderWindow* window);
+
+    virtual bool isNear(Ball* ball);
+    virtual Vector2d getCenter() const = 0;
+    virtual Vector2d getMaxPoint() = 0;
+    virtual Vector2d getMinPoint() = 0;
+
+    Ball* getBall(int i) const { return Balls[i]; }
+    size_t getNumOfBalls() const { return numOfBalls_; }
+
+private:
+    const int selectThickness_ = 1;
+    void drawSpeed(sf::RenderWindow* window);
+
 protected:
-    struct Spring: public DrawAble{
-        const int Ks = 20000;
-        const int Kd = 3000;
+    class Spring;
 
-        Ball* ball1;
-        Ball* ball2;
+    std::vector<Spring*> Springs;
+    std::vector<Ball*> Balls;
+    size_t numOfBalls_;
 
-        Vector2d DefaultVector;
-        float DefaultLength;
+    class Spring
+    {
+    private:
+        static const int Ks = 20000;
+        static const int Kd = 3000;
 
-        Spring(Ball* p1, Ball* p2);
+        Ball* ball1_;
+        Ball* ball2_;
+
+        Vector2d defaultVector_;
+        float defaultLength_;
+        // radius1 + radius2
+        float cache_;
+    public:
+        Spring(Ball* ball1, Ball* ball2);
         virtual ~Spring() = default;
 
         void ApplyHookesForce();
         void ApplyDampingFactor();
         void ApplySelfCollision();
 
-        void Draw(sf::RenderWindow* wnd) override;
+        void Draw(sf::RenderWindow* window);
     };
-
-    std::vector<Spring*> Springs;
-    std::vector<Ball*> Balls;
-
-    unsigned NumOfBalls;
-
-    Vector2d MaxPoint;
-    Vector2d MinPoint;
-
-public:
-    virtual ~SoftBody();
-
-    virtual void Draw(sf::RenderWindow* wnd) override;
-	virtual void EnableSelectedEfect(int thickness);
-	virtual void DisableSelectedEfect();
-
-    virtual Ball* getBall(int i) const {return Balls[i];}
-    virtual unsigned getNumOfBalls() const {return NumOfBalls;}
-
-    virtual Vector2d getCenter() const = 0;
-    virtual Vector2d getMaxPoint() = 0;
-    virtual Vector2d getMinPoint() = 0;
-
-    virtual void InnerForces() = 0;
 };
 

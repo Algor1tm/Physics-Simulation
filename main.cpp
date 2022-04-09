@@ -1,15 +1,10 @@
-#include <iostream>
 #include "include/core/MainApp.hpp"
 
 
 int main()
 {
-    MainApp* App = new MainApp();
+    MainApp App;
+    App.Start();
 
-    App->InitObjects();
-    App->Start();
-
-    delete App;
-
-    return 0;
+    return EXIT_SUCCESS;
 }

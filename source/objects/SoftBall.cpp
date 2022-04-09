@@ -1,51 +1,59 @@
 #include "../../include/objects/SoftBall.hpp"
 
 
-SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad,   \
-                   int BallCount, int BallRad, float ballDensity,const sf::Color& clr){
-    Rad = BodyRad;
 
+SoftBall::SoftBall(const Vector2d& StartPos, const Vector2d& StartSpeed, float BodyRad, int BallCount, const sf::Color& color)
+    : SoftBody(), radius_(BodyRad)
+{
     float tempx, tempy;
 
-    for(float angle = 0; angle < 360; angle += 360 / BallCount){
-        tempx = Rad * cos(angle * M_PI / 180);
-        tempy = Rad * sin(angle * M_PI / 180);
+    for(float angle = 0; angle < 360; angle += 360 / BallCount)
+    {
+        tempx = radius_ * cosf(angle * (float)M_PI / 180);
+        tempy = radius_ * sinf(angle * (float)M_PI / 180);
 
-        Balls.push_back(new Ball(StartPos + Vector2d(tempx, tempy),StartSpeed, BallRad, ballDensity, clr));
+        Balls.push_back(new Ball(StartPos + Vector2d(tempx, tempy), StartSpeed, ballRad, ballDensity, color));
     }
 
-    for(unsigned i =0; i < Balls.size(); i++){
+    for(unsigned i =0; i < Balls.size(); i++)
+    {
         if(i == Balls.size() - 1)
             Springs.push_back(new Spring(Balls[i], Balls[0]));
         else
             Springs.push_back(new Spring(Balls[i], Balls[i + 1]));
     }
 
-    NumOfBalls = Balls.size();
+    numOfBalls_ = Balls.size();
 }
 
-void SoftBall::ApplyEqautionOfIdealGas(){
-    unsigned s = Balls.size() / 2;
+
+void SoftBall::applyEqautionOfIdealGas()
+{
+    size_t temp = numOfBalls_ / 2;
     Vector2d center;
-    for(unsigned i = 0; i < s; i++)
-        center += 0.5 * (Balls[i]->getPos() + Balls[i + s]->getPos());
-    center = {center.x / s, center.y / s};
+    for(size_t i = 0; i < temp; i++)
+        center += 0.5 * (Balls[i]->getPos() + Balls[i + temp]->getPos());
+    center = Vector2d(center.x / temp, center.y / temp);
 
     Vector2d normal, F, pos;
-    float Area = CalculateArea() / 20000;
+    float area = computeArea() / areaScale;
 
-    for(unsigned i = 0; i < s * 2; i++){
+    for(size_t i = 0; i < numOfBalls_; i++)
+    {
         pos = Balls[i]->getPos();
         normal = (pos - center).normalize();
-        F = nRT / Area * normal;
-        Balls[i]->setForce(Balls[i]->getForce() + F);
+        F = nRT / area * normal;
+        Balls[i]->AddForce(F);
     }
 }
 
-void SoftBall::InnerForces(){
-    ApplyEqautionOfIdealGas();
 
-    for(auto& spring: Springs){
+void SoftBall::InnerForces()
+{
+    applyEqautionOfIdealGas();
+
+    for(auto& spring: Springs)
+    {
         spring->ApplyHookesForce();
         spring->ApplyDampingFactor();
         spring->ApplySelfCollision();
@@ -53,7 +61,8 @@ void SoftBall::InnerForces(){
 }
 
 
-float SoftBall::CalculateArea() const{
+float SoftBall::computeArea() const
+{
     float sum = 0;
     Vector2d pos1;
     Vector2d pos2;
@@ -64,30 +73,35 @@ float SoftBall::CalculateArea() const{
         pos2 = Balls[i]->getPos();
 
         sum += (pos1.x + pos2.x) * (pos1.y - pos2.y);
-
         j = i;
     }
-    return 0.5 * fabs(sum);
+    return 0.5f * fabs(sum);
 }
 
-Vector2d SoftBall::getMaxPoint(){
-    MaxPoint = Balls[0]->getPos();
+
+Vector2d SoftBall::getMaxPoint()
+{
+    Vector2d maxPoint;
+    maxPoint = Balls[0]->getPos();
     for(unsigned i = 1; i < Balls.size(); i++){
-        if(MaxPoint.x < Balls[i]->getPos().x)
-            MaxPoint.x = Balls[i]->getPos().x;
-        if(MaxPoint.y < Balls[i]->getPos().y)
-            MaxPoint.y = Balls[i]->getPos().y;
+        if(maxPoint.x < Balls[i]->getPos().x)
+            maxPoint.x = Balls[i]->getPos().x;
+        if(maxPoint.y < Balls[i]->getPos().y)
+            maxPoint.y = Balls[i]->getPos().y;
     }
-    return MaxPoint;
+    return maxPoint;
 }
 
-Vector2d SoftBall::getMinPoint(){
-    MinPoint = Balls[0]->getPos();
+
+Vector2d SoftBall::getMinPoint()
+{
+    Vector2d minPoint;
+    minPoint = Balls[0]->getPos();
     for(unsigned i = 1; i < Balls.size(); i++){
-        if(MinPoint.x > Balls[i]->getPos().x)
-            MinPoint.x = Balls[i]->getPos().x;
-        if(MinPoint.y > Balls[i]->getPos().y)
-            MinPoint.y = Balls[i]->getPos().y;
+        if(minPoint.x > Balls[i]->getPos().x)
+            minPoint.x = Balls[i]->getPos().x;
+        if(minPoint.y > Balls[i]->getPos().y)
+            minPoint.y = Balls[i]->getPos().y;
     }
-    return MinPoint;
+    return minPoint;
 }

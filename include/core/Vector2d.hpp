@@ -13,8 +13,11 @@ struct Vector2d{
     Vector2d(){x = 0, y = 0;}
     Vector2d(float X, float Y) { x = X, y = Y;}
     Vector2d(const Vector2d& v) {x = v.x, y = v.y;}
+    Vector2d(const sf::Vector2f& v) { x = v.x, y = v.y; }
+    Vector2d(const sf::Vector2i& v) { x = (float)v.x, y = (float)v.y; }
 
-    float getModule() const {return std::sqrt(x * x + y * y);}
+    float getLength() const {return std::sqrt(x * x + y * y);}
+    Vector2d getNormalized() const;
     Vector2d& normalize();
 
     operator sf::Vector2f() const {return sf::Vector2f(x, y);}
@@ -36,5 +39,11 @@ struct Vector2d{
 
     static float DotProduct(const Vector2d& v1, const Vector2d& v2) {return v1.x * v2.x + v1.y * v2.y;}
     static Vector2d Reflect(const Vector2d& ToReflect, const Vector2d& v);
+    static float Distance(const Vector2d& v1, const Vector2d& v2) { return (v1 - v2).getLength(); }
+    static Vector2d Random(const Vector2d& x_range, const Vector2d& y_range);
+    // 0 --> p, q and r are collinear
+    // 1 --> Clockwise
+    // 2 --> Counterclockwise
+    static int Orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r);
 };
 

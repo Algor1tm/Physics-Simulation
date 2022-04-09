@@ -1,67 +1,84 @@
 #include "../../include/objects/SoftRectangle.hpp"
 
 
-SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed, int w, int h, int interval, \
-                             int Rad, float ballDensity, const sf::Color& clr)
+SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed,  \
+                             int width, int height, const sf::Color& color)
+    : SoftBody(), width_(width), height_(height)
 {
-    width = w;
-    height = h;
     Vector2d pos = StartPos;
 
     float startx = StartPos.x;
-    for (int i = 0; i < h; i++){
-        for(int j = 0; j < w; j++){
-            Balls.push_back(new Ball(pos, StartSpeed, Rad, ballDensity, clr));
+    for (int i = 0; i < height_; i++)
+    {
+        for(int j = 0; j < width_; j++)
+        {
+            Balls.push_back(new Ball(pos, StartSpeed, ballRad, ballDensity, color));
             pos.x += interval;
         }
         pos.y += interval;
         pos.x = startx;
     }
 
-    for (int i = 0; i < h; i++){
-        for(int j = 0; j < w; j++){
-            if(j < w - 1)
-                Springs.push_back(new Spring(Balls[j + i * w], Balls[j + 1 + i * w]));
-            if(i < h - 1)
-                Springs.push_back(new Spring(Balls[j + i * w], Balls[j + (i + 1)* w]));
-            if((j < w - 1) && (i < h - 1))
-                Springs.push_back(new Spring(Balls[j + i * w], Balls[j + 1 + (i + 1)* w]));
-            if((j > 0) && (i < h - 1))
-                Springs.push_back(new Spring(Balls[j + i * w], Balls[j - 1 + (i + 1)* w]));
+    for (int i = 0; i < height_; i++)
+    {
+        for(int j = 0; j < width_; j++)
+        {
+            if(j < width_ - 1)
+                Springs.push_back(new Spring(Balls[j + i * width_], Balls[j + 1 + i * width_]));
+            if(i < height_ - 1)
+                Springs.push_back(new Spring(Balls[j + i * width_], Balls[j + (i + 1) * width_]));
+            if((j < width_ - 1) && (i < height_ - 1))
+                Springs.push_back(new Spring(Balls[j + i * width_], Balls[j + 1 + (i + 1) * width_]));
+            if((j > 0) && (i < height_ - 1))
+                Springs.push_back(new Spring(Balls[j + i * width_], Balls[j - 1 + (i + 1) * width_]));
 
         }
     }
 
-    NumOfBalls = Balls.size();
-
+    numOfBalls_ = Balls.size();
 }
 
-Vector2d SoftRectangle::getMaxPoint(){
+
+inline Vector2d SoftRectangle::getCenter() const
+{ 
+    return 0.5 * (Balls[0]->getPos() + Balls[numOfBalls_ - 1]->getPos());
+}
+
+Vector2d SoftRectangle::getMaxPoint()
+{
+    Vector2d maxPoint;
     //candidates:
     Vector2d c1 = Balls[0]->getPos();
-    Vector2d c2 = Balls[width - 1]->getPos();
-    Vector2d c3 = Balls[width * (height - 1)]->getPos();
+    Vector2d c2 = Balls[width_ - 1]->getPos();
+    Vector2d c3 = Balls[width_ * (height_ - 1)]->getPos();
     Vector2d c4 = Balls[Balls.size() - 1]->getPos();
 
-    MaxPoint.x = std::max(std::max(std::max(c1.x, c2.x), c3.x), c4.x);
-    MaxPoint.y = std::max(std::max(std::max(c1.y, c2.y), c3.y), c4.y);
+    maxPoint.x = std::max(std::max(std::max(c1.x, c2.x), c3.x), c4.x);
+    maxPoint.y = std::max(std::max(std::max(c1.y, c2.y), c3.y), c4.y);
 
-    return MaxPoint;
+    return maxPoint;
 }
 
-Vector2d SoftRectangle::getMinPoint(){
+
+Vector2d SoftRectangle::getMinPoint()
+{
+    Vector2d minPoint;
+    //candidates:
     Vector2d c1 = Balls[0]->getPos();
-    Vector2d c2 = Balls[width - 1]->getPos();
-    Vector2d c3 = Balls[width * (height - 1)]->getPos();
+    Vector2d c2 = Balls[width_ - 1]->getPos();
+    Vector2d c3 = Balls[width_ * (height_ - 1)]->getPos();
     Vector2d c4 = Balls[Balls.size() - 1]->getPos();
 
-    MinPoint.x = std::min(std::min(std::min(c1.x, c2.x), c3.x), c4.x);
-    MinPoint.y = std::min(std::min(std::min(c1.y, c2.y), c3.y), c4.y);
-    return MinPoint;
+    minPoint.x = std::min(std::min(std::min(c1.x, c2.x), c3.x), c4.x);
+    minPoint.y = std::min(std::min(std::min(c1.y, c2.y), c3.y), c4.y);
+    return minPoint;
 }
 
-void SoftRectangle::InnerForces(){
-    for(auto& spring: Springs){
+
+void SoftRectangle::InnerForces()
+{
+    for(auto& spring: Springs)
+    {
         spring->ApplyHookesForce();
         spring->ApplyDampingFactor();
         spring->ApplySelfCollision();

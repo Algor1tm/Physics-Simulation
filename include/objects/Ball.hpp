@@ -2,44 +2,37 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "PhysicalObjects.hpp"
+#include "RigidBody.hpp"
 #include "../core/Vector2d.hpp"
 #include "../core/Settings.hpp"
 
 
-class Ball: public MovAble, public DrawAble{
-private:
-    Vector2d Speed;
-    Vector2d Pos;
-    Vector2d Force;
-    float Mass;
-    float Density;
-    float Radius;
-
-    sf::CircleShape DrawShape;
-
-    void DrawSpeed(sf::RenderWindow* wnd);
+class Ball: public RigidBody
+{
 public:
-    Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& clr);
+    Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, float density, const sf::Color& color);
     ~Ball() = default;
 
-    // 1 - if selected by user, else - 0(selected from start)
-    bool selected;
+    bool isInside(const Vector2d& mousePos) override;
+    // user moving object
+    void OnLeftMouseMove(const Vector2d& mousePos) override;
+    // user change speed
+    void OnRightMouseMove(const Vector2d& mousePos) override;
 
-    float getRadius(){return Radius;}
-    Vector2d getSpeed()const {return Speed;}
-    Vector2d getPos() const {return Pos;}
-    Vector2d getForce() const {return Force;}
-    float getMass() const {return Mass;}
+    void OnSelect(int thickness) override;
+    void OnDeselect(int thickness) override;
 
-    void setSpeed(const Vector2d& newSpeed) {Speed = newSpeed;}
-    void setPos(const Vector2d& newPos) {Pos = newPos;}
-    void setForce(const Vector2d& newForce) {Force = newForce;}
+    void Draw(sf::RenderWindow* window) override;
 
-    void Draw(sf::RenderWindow* wnd);
+    float getRadius() const { return radius_; }
+    // if true - drawing speed(arrow)
+    bool DrawSpeed;
+private:
+    float density_;
+    float radius_;
 
-    void EnableSelectedEfect(int thickness);
-    void DisableSelectedEfect();
+    sf::CircleShape toDraw_;
 
+    void drawSpeed(sf::RenderWindow* window);
 };
 

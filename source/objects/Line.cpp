@@ -1,38 +1,34 @@
 #include "../../include/objects/Line.hpp"
 
 
-float Line::Distance(const Vector2d& point){
-    return fabs(a * point.x + b * point.y + c) / NormalModule;
 
+Line::Line(const Vector2d& p1, const Vector2d& p2, float thickness, const sf::Color& color)
+    : a(p1.y - p2.y), b(p2.x - p1.x), c(p1.x * p2.y - p2.x * p1.y), point1_(p1), point2_(p2),
+    normal_(a, b), thickness_(thickness), color_(color)
+{
+    cache_ = normal_.getLength();
+    normal_.normalize();
+    length_ = Vector2d::Distance(point1_, point2_);
+
+
+    Vector2d offset = thickness_ * normal_;
+    toDraw_[0].position = {p1.x , p1.y};
+    toDraw_[1].position = {p2.x, p2.y};
+    toDraw_[2].position = {p2.x + offset.x, p2.y + offset.y};
+    toDraw_[3].position = {p1.x + offset.x, p1.y + offset.y};
+
+    for (int i = 0; i < 4; ++i)
+        toDraw_[i].color = color_;
 }
 
-Line::Line(const Vector2d& p1, const Vector2d& p2, int LineThickness, const sf::Color& color){
-    a = p1.y - p2.y;
-    b = p2.x - p1.x;
-    c = p1.x * p2.y - p2.x * p1.y;
 
-    Point1 = p1;
-    Point2 = p2;
-
-    Normal = {a, b};
-    NormalModule = Normal.getModule();
-    Length = (Point2 - Point1).getModule();
-
-    Thickness = LineThickness;
-    clr = color;
-
-    Vector2d offset = Thickness / NormalModule * Normal;
-
-    vertices[0].position = {p1.x , p1.y};
-    vertices[1].position = {p2.x, p2.y};
-    vertices[2].position = {p2.x + offset.x, p2.y + offset.y};
-    vertices[3].position = {p1.x + offset.x, p1.y + offset.y};
-
-    for (int i=0; i<4; ++i)
-        vertices[i].color = clr;
+float Line::Distance(const Vector2d& point)
+{
+    return fabs(a * point.x + b * point.y + c) / cache_;
 }
 
-void Line::Draw(sf::RenderWindow* wnd){
-    wnd->draw(vertices, 4, sf::Quads);
 
+void Line::Draw(sf::RenderWindow* window)
+{
+    window->draw(toDraw_, 4, sf::Quads);
 }

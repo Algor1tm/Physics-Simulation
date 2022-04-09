@@ -4,19 +4,24 @@
 #include "../core/Vector2d.hpp"
 
 
-class SoftRectangle: public SoftBody{
-private:
-    int width;
-    int height;
-
+class SoftRectangle: public SoftBody
+{
 public:
-    SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed, int w, int h, int interval, int rad, float ballDensity,const sf::Color& clr);
-    virtual ~SoftRectangle(){}
+    SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpeed, int width, int height, const sf::Color& color);
+    virtual ~SoftRectangle() = default;
 
     void InnerForces() override;
-
-    Vector2d getCenter() const override {return 0.5 * (Balls[0]->getPos() + Balls[Balls.size() - 1]->getPos());}
+    
+    Vector2d getCenter() const override;
     Vector2d getMaxPoint() override;
     Vector2d getMinPoint() override;
+
+private:
+    int width_;
+    int height_;
+
+    static const int interval = 17;
+    static const int ballRad = 6;
+    static const int ballDensity = 1;
 };
 

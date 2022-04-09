@@ -1,33 +1,68 @@
 #include "../../include/core/Vector2d.hpp"
 
 
-Vector2d Vector2d::Reflect(const Vector2d& ToReflect, const Vector2d& v){
+Vector2d Vector2d::Reflect(const Vector2d& ToReflect, const Vector2d& v)
+{
     Vector2d res = ToReflect;
-    float m = v.getModule();
+    float m = v.getLength();
     float temp = Vector2d::DotProduct(res, v) / (m * m);
     res -= 2 * temp * v;
     return res;
 }
 
-Vector2d& Vector2d::operator+=(const Vector2d& v){
+
+Vector2d Vector2d::Random(const Vector2d& x_range, const Vector2d& y_range)
+{
+    float x = std::rand() % (int)(x_range.y - x_range.x) + x_range.x;
+    float y = std::rand() % (int)(y_range.y - y_range.x) + y_range.x;
+    return Vector2d(x, y);
+}
+
+
+int Vector2d::Orientation(const Vector2d& p, const Vector2d& q, const Vector2d& r)
+{
+    float val = (q.y - p.y) * (r.x - q.x) -
+        (q.x - p.x) * (r.y - q.y);
+
+    if (val == 0) return 0; // collinear
+    return (val > 0) ? 1 : 2; // clock or counter clock wise
+}
+
+
+Vector2d Vector2d::getNormalized() const
+{
+    Vector2d v{ x, y };
+    v.normalize();
+    return v;
+}
+
+
+Vector2d& Vector2d::operator+=(const Vector2d& v)
+{
     x += v.x;
     y += v.y;
     return *this;
 }
 
-Vector2d& Vector2d::operator-=(const Vector2d& v){
+
+Vector2d& Vector2d::operator-=(const Vector2d& v)
+{
     x -= v.x;
     y -= v.y;
     return *this;
 }
 
-Vector2d& Vector2d::normalize(){
-    float m = getModule();
+
+Vector2d& Vector2d::normalize()
+{
+    float m = getLength();
     x /= m, y /= m;
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector2d& v){
+
+std::ostream& operator<<(std::ostream& os, const Vector2d& v)
+{
     os << "Vector2d(" << v.x << ", " << v.y << ')' << std::endl;
     return os;
 }
