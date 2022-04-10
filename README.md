@@ -2,7 +2,7 @@
 
 Physic Simulation of Rigid Bodies and Soft Bodies with SFML 2.5.1
 
-INSTRUCTION
+Instruction
 =============
 
 Press Space to Pause/Unpause simulation.
