@@ -9,6 +9,8 @@ Press Space to Pause/Unpause simulation.
 While pause, you can moving objects with Right Mouse Button or
 Change Speed with Left Mouse Button.
 
+![physics2](https://user-images.githubusercontent.com/68811145/162621136-76f6bb0f-dada-45d4-ad1b-488d2b7b6ca5.png)
+![physics1](https://user-images.githubusercontent.com/68811145/162621139-b458df44-aad9-4caa-8ff3-4be88ba75132.png)
 
 How to run project
 -----------------------
