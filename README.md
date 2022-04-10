@@ -10,7 +10,7 @@ While pause, you can moving objects with Right Mouse Button or
 Change Speed with Left Mouse Button.
 
 
-HOW TO RUN PROJECT
+How to run project
 -----------------------
 
 Solution is made for Visual Studio 2019.  
