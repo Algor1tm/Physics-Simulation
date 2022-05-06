@@ -15,7 +15,7 @@ void RigidBody::Move(float time)
 }
 
 
-inline void RigidBody::Move(const Vector2d& distance)
+void RigidBody::Move(const Vector2d& distance)
 {
     pos_ += distance;
 }

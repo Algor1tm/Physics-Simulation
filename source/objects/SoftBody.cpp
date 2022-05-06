@@ -89,13 +89,13 @@ bool SoftBody::isInside(const Vector2d& mousePos)
 }
 
 
-inline void SoftBody::OnLeftMouseMove(const Vector2d& mousePos)
+void SoftBody::OnLeftMouseMove(const Vector2d& mousePos)
 {
     Move(mousePos - getCenter());
 }
 
 
-inline void SoftBody::OnRightMouseMove(const Vector2d& mousePos)
+void SoftBody::OnRightMouseMove(const Vector2d& mousePos)
 {
     for(auto& ball: Balls)
         ball->AddSpeed(0.03f * (mousePos - ball->getPos()) - ball->getSpeed());

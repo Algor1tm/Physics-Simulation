@@ -12,19 +12,19 @@ Ball::Ball(const Vector2d& StartPos, const Vector2d& StartSpeed, float Rad, floa
 }
 
 
-inline void Ball::OnLeftMouseMove(const Vector2d& mousePos)
+void Ball::OnLeftMouseMove(const Vector2d& mousePos)
 { 
     Move(mousePos - getPos()); 
 }
 
 
-inline void Ball::OnRightMouseMove(const Vector2d& mousePos)
+void Ball::OnRightMouseMove(const Vector2d& mousePos)
 { 
     AddSpeed(0.2f * (mousePos - getPos()) - getSpeed()); 
 }
 
 
-inline bool Ball::isInside(const Vector2d& mousePos)
+bool Ball::isInside(const Vector2d& mousePos)
 {
     return Vector2d::Distance(getPos(), mousePos) < radius_;
 }

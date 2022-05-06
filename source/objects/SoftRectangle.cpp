@@ -39,7 +39,7 @@ SoftRectangle::SoftRectangle(const Vector2d& StartPos, const Vector2d& StartSpee
 }
 
 
-inline Vector2d SoftRectangle::getCenter() const
+Vector2d SoftRectangle::getCenter() const
 { 
     return 0.5 * (Balls[0]->getPos() + Balls[numOfBalls_ - 1]->getPos());
 }
